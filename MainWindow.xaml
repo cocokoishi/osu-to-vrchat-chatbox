@@ -1,0 +1,199 @@
+<Window x:Class="OsuOscVRC.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="osu! → VRChat OSC" Height="660" Width="580"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ═══ Row 0: Status Bar ═══ -->
+        <Border Grid.Row="0" Background="{StaticResource PanelBrush}"
+                CornerRadius="6" Padding="14,10" Margin="0,0,0,10"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+            <TextBlock x:Name="TxtStatus" Text="○ Disconnected"
+                       FontWeight="SemiBold" FontSize="14"
+                       HorizontalAlignment="Center" Foreground="{StaticResource TextBrush}"/>
+        </Border>
+
+        <!-- ═══ Row 1: Preview ═══ -->
+        <GroupBox Grid.Row="1" x:Name="GrpPreview" Header="当前输出预览:" Margin="0,0,0,10">
+            <TextBlock x:Name="TxtPreview" Text="..." Margin="6" TextWrapping="Wrap"
+                       FontFamily="Consolas" FontSize="14" Foreground="{StaticResource TextBrush}"/>
+        </GroupBox>
+
+        <!-- ═══ Row 2: Start / Stop ═══ -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
+            <Button x:Name="BtnStart" Content="▶ 开始" Click="BtnStart_Click"
+                    Width="130" FontSize="14" FontWeight="Bold"
+                    Background="#E8E8E8" Foreground="#111111" Margin="0,0,10,0"/>
+            <Button x:Name="BtnStop" Content="⏹ 停止" Click="BtnStop_Click"
+                    Width="130" FontSize="14" FontWeight="Bold" IsEnabled="False"
+                    Background="#333333" Foreground="#AAAAAA"/>
+        </StackPanel>
+
+        <!-- ═══ Row 3: Tabs ═══ -->
+        <TabControl Grid.Row="3" Margin="0,4,0,0">
+
+            <!-- ── Connection ── -->
+            <TabItem x:Name="TabConnection" Header="连接设置">
+                <StackPanel Margin="12,16,12,12">
+                    <Label x:Name="LblTosuExePath" Content="tosu.exe 路径:"/>
+                    <Grid Margin="0,2,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="TbTosuExePath" Grid.Column="0"/>
+                        <Button x:Name="BtnBrowseTosu" Grid.Column="1" Content=" … "
+                                Click="BtnBrowseTosu_Click" Margin="6,0,0,0" Padding="8,4"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label x:Name="LblTosuPort" Content="tosu 端口:"/>
+                        <TextBox x:Name="TbTosuPort" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label x:Name="LblOscHost" Content="VRC OSC 地址:"/>
+                        <TextBox x:Name="TbOscHost" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label x:Name="LblOscPort" Content="VRC OSC 端口:"/>
+                        <TextBox x:Name="TbOscPort" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+
+            <!-- ── Templates ── -->
+            <TabItem x:Name="TabTemplates" Header="消息模板">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12,12,12,12">
+                        <TextBlock Text="可用变量: {title} {artist} {version} {stars} {mode} {time_current} {time_total} {accuracy} {pp} {pp_fc} {rank} {mods} {combo} {max_combo} {player}"
+                                   Foreground="{StaticResource DimTextBrush}" TextWrapping="Wrap" Margin="0,0,0,14" FontSize="11"/>
+
+                        <Label x:Name="LblTplPlaying1" Content="游玩中 (第一行):"/>
+                        <TextBox x:Name="TbTplPlaying1" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplPlaying2" Content="游玩中 (第二行):"/>
+                        <TextBox x:Name="TbTplPlaying2" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplReplay" Content="观看回放:"/>
+                        <TextBox x:Name="TbTplReplay" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplReplayResult" Content="回放结算:"/>
+                        <TextBox x:Name="TbTplReplayResult" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplPaused" Content="暂停前缀:"/>
+                        <TextBox x:Name="TbTplPaused" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplSongSelect" Content="选歌界面:"/>
+                        <TextBox x:Name="TbTplSongSelect" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplResult" Content="结算界面:"/>
+                        <TextBox x:Name="TbTplResult" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplIdle" Content="大厅/空闲:"/>
+                        <TextBox x:Name="TbTplIdle" Margin="0,2,0,10"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ── Display ── -->
+            <TabItem x:Name="TabDisplay" Header="显示设置">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12,16,12,12">
+                        <CheckBox x:Name="CbUseUnicode" Content="使用原版标题 (Unicode)" Margin="0,0,0,10"/>
+                        <CheckBox x:Name="CbShowArtist" Content="显示艺术家名称" Margin="0,0,0,16"/>
+
+                        <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <Label x:Name="LblDispStar" Content="星数小数位:"/>
+                            <TextBox x:Name="TbDispStar" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <Label x:Name="LblDispPp" Content="PP 小数位:"/>
+                            <TextBox x:Name="TbDispPp" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,12"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <Label x:Name="LblDispAcc" Content="准确度小数位:"/>
+                            <TextBox x:Name="TbDispAcc" Grid.Column="1"/>
+                        </Grid>
+
+                        <TextBlock Text="─── 模式名称映射 ───" Foreground="{StaticResource DimTextBrush}" Margin="0,0,0,8"/>
+
+                        <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <Label x:Name="LblDispModeOsu" Content="osu! 模式:"/>
+                            <TextBox x:Name="TbDispModeOsu" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <Label x:Name="LblDispModeTaiko" Content="taiko 模式:"/>
+                            <TextBox x:Name="TbDispModeTaiko" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <Label x:Name="LblDispModeCatch" Content="catch 模式:"/>
+                            <TextBox x:Name="TbDispModeCatch" Grid.Column="1"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                            <Label x:Name="LblDispModeMania" Content="mania 模式:"/>
+                            <TextBox x:Name="TbDispModeMania" Grid.Column="1"/>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ── Advanced ── -->
+            <TabItem x:Name="TabAdvanced" Header="高级设置">
+                <StackPanel Margin="12,16,12,12">
+                    <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Label x:Name="LblAdvUpdate" Content="OSC 发送间隔 (ms):"/>
+                        <TextBox x:Name="TbAdvUpdate" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Label x:Name="LblAdvResult" Content="结算停留 (s):"/>
+                        <TextBox x:Name="TbAdvResult" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Label x:Name="LblAdvPause" Content="暂停阈值 (ms):"/>
+                        <TextBox x:Name="TbAdvPause" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Label x:Name="LblAdvReconnect" Content="重连延迟 (ms):"/>
+                        <TextBox x:Name="TbAdvReconnect" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Label x:Name="LblAdvMaxLen" Content="最大消息长度:"/>
+                        <TextBox x:Name="TbAdvMaxLen" Grid.Column="1"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Label x:Name="LblAdvMaxTitle" Content="标题最大长度:"/>
+                        <TextBox x:Name="TbAdvMaxTitle" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+
+        <!-- Save floating at bottom-right -->
+        <Button x:Name="BtnSave" Content="保存配置" Click="BtnSave_Click"
+                Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,16,16" Padding="16,8"
+                Background="#E8E8E8" Foreground="#111111" FontWeight="Bold"/>
+    </Grid>
+</Window>

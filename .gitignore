@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+config_osuosc.yaml
+toso.toml
+tosu/
