@@ -75,33 +75,60 @@ namespace OsuOscVRC.Data
             }
         }
 
-        /// <summary>
-        /// Writes/updates tosu.toml to set openDashboardOnStartup = false
+        /// Writes/updates tosu.env and tosu.toml to set openDashboardOnStartup = false
         /// </summary>
         private void EnsureNoBrowser(string tosuDir)
         {
-            var configPath = Path.Combine(tosuDir, "tosu.toml");
+            // Support for tosu v4 (.env format)
+            var envPath = Path.Combine(tosuDir, "tosu.env");
             try
             {
-                if (File.Exists(configPath))
+                if (File.Exists(envPath))
                 {
-                    string content = File.ReadAllText(configPath);
-                    if (content.Contains("openDashboardOnStartup"))
+                    string content = File.ReadAllText(envPath);
+                    if (content.Contains("OPEN_DASHBOARD_ON_STARTUP"))
+                    {
+                        content = Regex.Replace(content,
+                            @"OPEN_DASHBOARD_ON_STARTUP\s*=\s*\w+",
+                            "OPEN_DASHBOARD_ON_STARTUP=false");
+                    }
+                    else
+                    {
+                        content += "\nOPEN_DASHBOARD_ON_STARTUP=false\n";
+                    }
+                    File.WriteAllText(envPath, content);
+                }
+                else
+                {
+                    File.WriteAllText(envPath, "OPEN_DASHBOARD_ON_STARTUP=false\n");
+                }
+            }
+            catch { }
+
+            // Support for older tosu v3 (.toml format)
+            var tomlPath = Path.Combine(tosuDir, "tosu.toml");
+            try
+            {
+                if (File.Exists(tomlPath))
+                {
+                    string content = File.ReadAllText(tomlPath);
+                    if (Regex.IsMatch(content, @"openDashboardOnStartup\s*=\s*\w+", RegexOptions.IgnoreCase))
                     {
                         content = Regex.Replace(content,
                             @"openDashboardOnStartup\s*=\s*\w+",
-                            "openDashboardOnStartup = false");
+                            "openDashboardOnStartup = false",
+                            RegexOptions.IgnoreCase);
                     }
                     else
                     {
                         content += "\nopenDashboardOnStartup = false\n";
                     }
-                    File.WriteAllText(configPath, content);
+                    File.WriteAllText(tomlPath, content);
                 }
-                else
+                // Only create toml if neither exists to avoid creating dummy files for v4 users
+                else if (!File.Exists(envPath))
                 {
-                    File.WriteAllText(configPath,
-                        "[dangerous]\nopenDashboardOnStartup = false\n");
+                    File.WriteAllText(tomlPath, "[dangerous]\nopenDashboardOnStartup = false\n");
                 }
             }
             catch { /* ignore config write errors */ }
