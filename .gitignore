@@ -6,3 +6,6 @@ obj/
 config_osuosc.yaml
 toso.toml
 tosu/
+publish_test/
+test-tosu/
+test-tosu.zip

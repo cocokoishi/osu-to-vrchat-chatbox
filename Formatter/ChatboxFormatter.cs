@@ -7,7 +7,7 @@ namespace OsuOscVRC.Formatter
 {
     public static class ChatboxFormatter
     {
-        public static string Format(OsuState? state, GameState gameState, AppConfig config)
+        public static string Format(OsuState? state, GameState gameState, AppConfig config, bool forceTimeZero = false)
         {
             if (state == null) return "";
 
@@ -23,6 +23,9 @@ namespace OsuOscVRC.Formatter
                     break;
                 case GameState.SongSelect:
                     template = config.Templates.SongSelect ?? "";
+                    break;
+                case GameState.Editor:
+                    template = config.Templates.Editor ?? "";
                     break;
                 case GameState.WatchingReplay:
                     template = $"{config.Templates.WatchingReplay}\n{config.Templates.PlayingLine2}";
@@ -43,10 +46,10 @@ namespace OsuOscVRC.Formatter
                     return "";
             }
 
-            return ApplyVariables(template, state, gameState, config);
+            return ApplyVariables(template, state, gameState, config, forceTimeZero);
         }
 
-        private static string ApplyVariables(string template, OsuState state, GameState gameState, AppConfig config)
+        private static string ApplyVariables(string template, OsuState state, GameState gameState, AppConfig config, bool forceTimeZero = false)
         {
             var title = config.UseUnicodeTitle && !string.IsNullOrEmpty(state.Beatmap?.TitleUnicode)
                 ? state.Beatmap.TitleUnicode
@@ -68,15 +71,19 @@ namespace OsuOscVRC.Formatter
             if (version.Length > maxLen)
                 version = version.Substring(0, maxLen) + "…";
 
-            // Mode
-            var mode = (state.Play?.Mode?.Name ?? "").ToLower();
+            // Mode - tosu uses "Osu", "Taiko", "Fruits" (=catch), "Mania"
             bool isResult = gameState == GameState.ResultScreen || gameState == GameState.ReplayResultScreen;
-            if (isResult) mode = (state.ResultsScreen?.Mode?.Name ?? mode).ToLower();
+            var mode = isResult
+                ? (state.ResultsScreen?.Mode?.Name ?? "").ToLower()
+                : (state.Play?.Mode?.Name ?? "").ToLower();
+            // Fallback to settings.mode if play.mode is empty
+            if (string.IsNullOrEmpty(mode))
+                mode = (state.Settings?.Mode?.Name ?? "").ToLower();
 
             var modeName = mode switch
             {
                 "taiko" => config.ModeNames.Taiko,
-                "catch" => config.ModeNames.Catch,
+                "catch" or "fruits" => config.ModeNames.Catch,
                 "mania" => config.ModeNames.Mania,
                 _ => config.ModeNames.Osu
             };
@@ -85,7 +92,7 @@ namespace OsuOscVRC.Formatter
             double pp = isResult ? (state.ResultsScreen?.Pp?.Current ?? 0) : (state.Play?.Pp?.Current ?? 0);
             string rank = isResult ? (state.ResultsScreen?.Rank ?? "") : (state.Play?.Rank?.Current ?? "");
 
-            var timeCurrent = FormatTime(state.Beatmap?.Time?.Live ?? 0);
+            var timeCurrent = forceTimeZero ? "0:00" : FormatTime(state.Beatmap?.Time?.Live ?? 0);
             var timeTotal = FormatTime(state.Beatmap?.Time?.LastObject ?? 0);
             string mods = state.Play?.Mods?.Name ?? "";
 
@@ -113,11 +120,18 @@ namespace OsuOscVRC.Formatter
                 .Replace("{max_combo}", (state.Play?.Combo?.Max ?? 0).ToString())
                 .Replace("{player}", state.Play?.PlayerName ?? "");
 
+            bool isWhiteSpace = !string.IsNullOrEmpty(result) && string.IsNullOrWhiteSpace(result);
             result = Regex.Replace(result, @"  +", " ");
             result = string.Join("\n", Array.ConvertAll(result.Split('\n'), l => l.Trim()));
+            if (isWhiteSpace && result == "") result = " ";
 
             if (result.Length > config.MaxMessageLength)
-                result = result.Substring(0, config.MaxMessageLength - 3) + "...";
+            {
+                if (config.MaxMessageLength <= 3)
+                    result = result.Substring(0, config.MaxMessageLength);
+                else
+                    result = result.Substring(0, config.MaxMessageLength - 3) + "...";
+            }
 
             return result;
         }

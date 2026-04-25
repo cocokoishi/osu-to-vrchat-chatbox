@@ -59,6 +59,7 @@ namespace OsuOscVRC
             LblTplReplayResult.Content = Translator.Get("TplReplayResult");
             LblTplSongSelect.Content = Translator.Get("TplSongSelect");
             LblTplResult.Content = Translator.Get("TplResult");
+            LblTplEditor.Content = Translator.Get("TplEditor");
             LblTplIdle.Content = Translator.Get("TplIdle");
             CbUseUnicode.Content = Translator.Get("DispUseUnicode");
             CbShowArtist.Content = Translator.Get("DispShowArtist");
@@ -90,6 +91,7 @@ namespace OsuOscVRC
             TbTplReplayResult.Text = _config.Templates.ReplayResult;
             TbTplSongSelect.Text = _config.Templates.SongSelect;
             TbTplResult.Text = _config.Templates.ResultScreen;
+            TbTplEditor.Text = _config.Templates.Editor;
             TbTplIdle.Text = _config.Templates.IdleText;
             CbUseUnicode.IsChecked = _config.UseUnicodeTitle;
             CbShowArtist.IsChecked = _config.ShowArtist;
@@ -121,6 +123,7 @@ namespace OsuOscVRC
             _config.Templates.ReplayResult = TbTplReplayResult.Text;
             _config.Templates.SongSelect = TbTplSongSelect.Text;
             _config.Templates.ResultScreen = TbTplResult.Text;
+            _config.Templates.Editor = TbTplEditor.Text;
             _config.Templates.IdleText = TbTplIdle.Text;
             _config.UseUnicodeTitle = CbUseUnicode.IsChecked ?? false;
             _config.ShowArtist = CbShowArtist.IsChecked ?? false;
@@ -213,8 +216,14 @@ namespace OsuOscVRC
             }
             UpdateStatus();
             var state = _tosuClient.LatestState;
+            var prevState = _currentGameState;
             DetermineGameState(state);
-            string output = ChatboxFormatter.Format(state, _currentGameState, _config);
+
+            // Force 0:00 on the first tick when entering Playing/WatchingReplay
+            bool justStartedPlaying = (_currentGameState == GameState.Playing || _currentGameState == GameState.WatchingReplay)
+                && prevState != GameState.Playing && prevState != GameState.WatchingReplay && prevState != GameState.Paused;
+
+            string output = ChatboxFormatter.Format(state, _currentGameState, _config, justStartedPlaying);
             TxtPreview.Text = string.IsNullOrEmpty(output) ? "..." : output;
             if (_oscSender != null && !string.IsNullOrEmpty(output))
             {
@@ -243,12 +252,31 @@ namespace OsuOscVRC
                 return;
             }
 
+            // 1 = Edit, 4 = SelectEdit
+            if (rawState == 1 || rawState == 4) { _currentGameState = GameState.Editor; _wasWatchingReplay = false; return; }
+
             if (rawState == 5) { _currentGameState = GameState.SongSelect; _wasWatchingReplay = false; return; }
 
             if (rawState == 2)
             {
-                // IsReplay handles Guest vs Player correctly using tosu API
-                bool isReplay = state.Play?.IsReplay ?? false;
+                string profileName = state.Profile?.Name ?? "";
+                string playerName = state.Play?.PlayerName ?? "";
+
+                bool isReplay = state.Settings?.ReplayUIVisible ?? false;
+                if (!isReplay && !string.IsNullOrEmpty(playerName))
+                {
+                    if (string.IsNullOrEmpty(profileName))
+                    {
+                        // Guest mode fallback: If player is empty or "Guest", it's own play. Anything else is replay.
+                        isReplay = !playerName.Equals("Guest", StringComparison.OrdinalIgnoreCase);
+                    }
+                    else
+                    {
+                        // Logged in fallback: If playing name differs from profile name, it's a replay.
+                        isReplay = !playerName.Equals(profileName, StringComparison.OrdinalIgnoreCase);
+                    }
+                }
+
                 _wasWatchingReplay = isReplay;
 
                 int timeLive = state.Beatmap?.Time?.Live ?? 0;
@@ -260,7 +288,11 @@ namespace OsuOscVRC
                 }
                 else if ((DateTime.Now - _lastTimeLiveChanged).TotalMilliseconds > _config.PauseDetectionThresholdMs)
                 {
-                    _currentGameState = GameState.Paused;
+                    int lastObject = state.Beatmap?.Time?.LastObject ?? 0;
+                    if (lastObject == 0 || timeLive < lastObject)
+                    {
+                        _currentGameState = GameState.Paused;
+                    }
                 }
                 return;
             }

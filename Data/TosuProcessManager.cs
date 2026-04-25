@@ -76,11 +76,11 @@ namespace OsuOscVRC.Data
         }
 
         /// <summary>
-        /// Writes/updates toso.toml to set openDashboardOnStartup = false
+        /// Writes/updates tosu.toml to set openDashboardOnStartup = false
         /// </summary>
         private void EnsureNoBrowser(string tosuDir)
         {
-            var configPath = Path.Combine(tosuDir, "toso.toml");
+            var configPath = Path.Combine(tosuDir, "tosu.toml");
             try
             {
                 if (File.Exists(configPath))

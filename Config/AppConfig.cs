@@ -8,7 +8,7 @@ namespace OsuOscVRC.Config
         public string VRChatOscHost { get; set; } = "127.0.0.1";
         public int VRChatOscPort { get; set; } = 9000;
 
-        public int UpdateIntervalMs { get; set; } = 5000;
+        public int UpdateIntervalMs { get; set; } = 1600;
         public int ResultScreenDurationS { get; set; } = 10;
         public int PauseDetectionThresholdMs { get; set; } = 500;
         public int ReconnectDelayMs { get; set; } = 5000;
@@ -34,6 +34,7 @@ namespace OsuOscVRC.Config
         public string WatchingReplay { get; set; } = "Watching {title} [{version}] ★{stars} played by {player}";
         public string ReplayResult { get; set; } = "{title} | {version} | ★{stars} | {rank} | {accuracy}% | {pp}PP";
         public string SongSelect { get; set; } = "Idle: {title} [{version}] ★{stars}";
+        public string Editor { get; set; } = "Editing: {title} [{version}]";
         public string ResultScreen { get; set; } = "[Cleared!] {title} | {version} | ★{stars} | {rank} | Finally {accuracy}% | Get {pp}PP";
         public string IdleText { get; set; } = "In Lobby";
         public string NotRunning { get; set; } = "";

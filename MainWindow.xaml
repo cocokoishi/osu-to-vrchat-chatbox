@@ -4,7 +4,7 @@
         Title="osu! → VRChat OSC" Height="660" Width="580"
         ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}"
-        FontFamily="Segoe UI" FontSize="13">
+        FontFamily="Segoe UI" FontSize="13" Icon="icon.ico">
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
@@ -107,6 +107,9 @@
 
                         <Label x:Name="LblTplSongSelect" Content="选歌界面:"/>
                         <TextBox x:Name="TbTplSongSelect" Margin="0,2,0,10"/>
+
+                        <Label x:Name="LblTplEditor" Content="编辑模式:"/>
+                        <TextBox x:Name="TbTplEditor" Margin="0,2,0,10"/>
 
                         <Label x:Name="LblTplResult" Content="结算界面:"/>
                         <TextBox x:Name="TbTplResult" Margin="0,2,0,10"/>

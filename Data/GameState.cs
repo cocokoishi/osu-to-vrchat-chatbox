@@ -11,6 +11,7 @@ namespace OsuOscVRC.Data
         Paused = 10,
         WatchingReplay = 11,
         ReplayResultScreen = 12,
+        Editor = 13,
         Unknown = 99
     }
 }

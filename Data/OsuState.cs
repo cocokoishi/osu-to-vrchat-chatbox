@@ -6,9 +6,16 @@ namespace OsuOscVRC.Data
     {
         [JsonPropertyName("state")] public StateData State { get; set; } = new();
         [JsonPropertyName("settings")] public SettingsData Settings { get; set; } = new();
+        [JsonPropertyName("profile")] public ProfileData Profile { get; set; } = new();
         [JsonPropertyName("beatmap")] public BeatmapData Beatmap { get; set; } = new();
         [JsonPropertyName("play")] public PlayData Play { get; set; } = new();
         [JsonPropertyName("resultsScreen")] public ResultsScreenData ResultsScreen { get; set; } = new();
+    }
+
+    public class ProfileData
+    {
+        [JsonPropertyName("id")] public int Id { get; set; }
+        [JsonPropertyName("name")] public string Name { get; set; } = "";
     }
 
     public class StateData
@@ -19,6 +26,7 @@ namespace OsuOscVRC.Data
     public class SettingsData
     {
         [JsonPropertyName("mode")] public ModeData Mode { get; set; } = new();
+        [JsonPropertyName("replayUIVisible")] public bool ReplayUIVisible { get; set; }
     }
 
     public class ModeData
@@ -57,13 +65,13 @@ namespace OsuOscVRC.Data
     public class PlayData
     {
         [JsonPropertyName("playerName")] public string PlayerName { get; set; } = "";
-        [JsonPropertyName("isReplay")] public bool IsReplay { get; set; }
         [JsonPropertyName("mode")] public ModeData Mode { get; set; } = new();
         [JsonPropertyName("accuracy")] public double Accuracy { get; set; }
         [JsonPropertyName("pp")] public PpData Pp { get; set; } = new();
         [JsonPropertyName("rank")] public RankData Rank { get; set; } = new();
         [JsonPropertyName("mods")] public ModsData Mods { get; set; } = new();
         [JsonPropertyName("combo")] public ComboData Combo { get; set; } = new();
+        [JsonPropertyName("isReplay")] public bool IsReplay { get; set; }
     }
 
     public class ComboData
