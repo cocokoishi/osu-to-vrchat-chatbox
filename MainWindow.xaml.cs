@@ -262,7 +262,7 @@ namespace OsuOscVRC
                 string profileName = state.Profile?.Name ?? "";
                 string playerName = state.Play?.PlayerName ?? "";
 
-                bool isReplay = state.Settings?.ReplayUIVisible ?? false;
+                bool isReplay = false;
                 if (!isReplay && !string.IsNullOrEmpty(playerName))
                 {
                     if (string.IsNullOrEmpty(profileName))
