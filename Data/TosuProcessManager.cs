@@ -40,7 +40,11 @@ namespace OsuOscVRC.Data
         {
             if (IsPortInUse()) return null; // tosu already running
 
-            string fullPath = Path.GetFullPath(_exePath);
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string fullPath = Path.IsPathRooted(_exePath) 
+                ? _exePath 
+                : Path.GetFullPath(Path.Combine(basePath, _exePath));
+                
             if (!File.Exists(fullPath))
             {
                 return $"tosu.exe not found at:\n{fullPath}\n\n" +
