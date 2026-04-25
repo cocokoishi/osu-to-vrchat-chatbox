@@ -51,11 +51,13 @@ namespace OsuOscVRC.Data
     public class StarsData
     {
         [JsonPropertyName("live")] public double Live { get; set; }
+        [JsonPropertyName("total")] public double Total { get; set; }
     }
 
     public class PlayData
     {
         [JsonPropertyName("playerName")] public string PlayerName { get; set; } = "";
+        [JsonPropertyName("isReplay")] public bool IsReplay { get; set; }
         [JsonPropertyName("mode")] public ModeData Mode { get; set; } = new();
         [JsonPropertyName("accuracy")] public double Accuracy { get; set; }
         [JsonPropertyName("pp")] public PpData Pp { get; set; } = new();

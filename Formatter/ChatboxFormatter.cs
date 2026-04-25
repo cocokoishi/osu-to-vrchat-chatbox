@@ -89,7 +89,9 @@ namespace OsuOscVRC.Formatter
             var timeTotal = FormatTime(state.Beatmap?.Time?.LastObject ?? 0);
             string mods = state.Play?.Mods?.Name ?? "";
 
-            string starsStr = (state.Beatmap?.Stats?.Stars?.Live ?? 0).ToString($"F{config.StarDecimals}");
+            double stars = state.Beatmap?.Stats?.Stars?.Total ?? 0;
+            if (stars == 0) stars = state.Beatmap?.Stats?.Stars?.Live ?? 0;
+            string starsStr = stars.ToString($"F{config.StarDecimals}");
             string accStr = accuracy.ToString($"F{config.AccuracyDecimals}");
             string ppStr = Math.Round(pp, config.PpDecimals).ToString($"F{config.PpDecimals}");
             string ppFcStr = Math.Round(state.Play?.Pp?.Fc ?? 0, config.PpDecimals).ToString($"F{config.PpDecimals}");
