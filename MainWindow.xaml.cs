@@ -159,6 +159,42 @@ namespace OsuOscVRC
             if (dlg.ShowDialog() == true) TbTosuExePath.Text = dlg.FileName;
         }
 
+        private void VariablesHint_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            string variables = "{title} {artist} {version} {stars} {mode} {mode_id} {path} "
+                + "{time_current} {time_total} {accuracy} {acc} {pp} {pp_fc} {rank} {mods} {mods_id} "
+                + "{combo} {max_combo} {miss} {player} "
+                + "{n300} {n100} {n50} {ngeki} {nkatu} {passed_objects} {clock_rate}";
+
+            try
+            {
+                Clipboard.SetText(variables);
+                TxtVariablesHint.Text = "✅ 已复制到剪贴板!";
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+                timer.Tick += (_, _) =>
+                {
+                    timer.Stop();
+                    TxtVariablesHint.Inlines.Clear();
+                    var run1 = new System.Windows.Documents.Run("可用变量 (点击复制):") { FontWeight = FontWeights.Bold };
+                    var br1 = new System.Windows.Documents.LineBreak();
+                    var run2 = new System.Windows.Documents.Run("  {title} {artist} {version} {stars} {mode} {mode_id} {path}");
+                    var br2 = new System.Windows.Documents.LineBreak();
+                    var run3 = new System.Windows.Documents.Run("  {time_current} {time_total} {accuracy} {acc} {pp} {pp_fc} {rank} {mods} {mods_id} {combo} {max_combo} {miss} {player}");
+                    var br3 = new System.Windows.Documents.LineBreak();
+                    var run4 = new System.Windows.Documents.Run("  判定统计: {n300} {n100} {n50} {ngeki} {nkatu} {passed_objects}  |  变速: {clock_rate}");
+                    TxtVariablesHint.Inlines.Add(run1);
+                    TxtVariablesHint.Inlines.Add(br1);
+                    TxtVariablesHint.Inlines.Add(run2);
+                    TxtVariablesHint.Inlines.Add(br2);
+                    TxtVariablesHint.Inlines.Add(run3);
+                    TxtVariablesHint.Inlines.Add(br3);
+                    TxtVariablesHint.Inlines.Add(run4);
+                };
+                timer.Start();
+            }
+            catch { }
+        }
+
         private async void BtnStart_Click(object sender, RoutedEventArgs e)
         {
             SaveUiToConfig();

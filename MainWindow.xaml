@@ -87,15 +87,17 @@
             <TabItem x:Name="TabTemplates" Header="消息模板">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="12,12,12,12">
-                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,14" FontSize="11" Foreground="{StaticResource DimTextBrush}">
-                            <Run Text="可用变量:" FontWeight="Bold"/>
-                            <LineBreak/>
-                            <Run Text="  {title} {artist} {version} {stars} {mode} {mode_id} {path}"/>
-                            <LineBreak/>
-                            <Run Text="  {time_current} {time_total} {accuracy} {acc} {pp} {pp_fc} {rank} {mods} {mods_id} {combo} {max_combo} {miss} {player}"/>
-                            <LineBreak/>
-                            <Run Text="  判定统计: {n300} {n100} {n50} {ngeki} {nkatu} {passed_objects}  |  变速: {clock_rate}"/>
-                        </TextBlock>
+                        <Border BorderThickness="1" BorderBrush="{StaticResource BorderBrush}" CornerRadius="4" Padding="8,6" Margin="0,0,0,14" Cursor="Hand" MouseLeftButtonDown="VariablesHint_MouseDown" ToolTip="点击复制变量列表">
+                            <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="{StaticResource DimTextBrush}" x:Name="TxtVariablesHint">
+                                <Run Text="可用变量 (点击复制):" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="  {title} {artist} {version} {stars} {mode} {mode_id} {path}"/>
+                                <LineBreak/>
+                                <Run Text="  {time_current} {time_total} {accuracy} {acc} {pp} {pp_fc} {rank} {mods} {mods_id} {combo} {max_combo} {miss} {player}"/>
+                                <LineBreak/>
+                                <Run Text="  判定统计: {n300} {n100} {n50} {ngeki} {nkatu} {passed_objects}  |  变速: {clock_rate}"/>
+                            </TextBlock>
+                        </Border>
 
                         <Label x:Name="LblTplPlaying1" Content="游玩中 (第一行):"/>
                         <TextBox x:Name="TbTplPlaying1" Margin="0,2,0,10"/>
