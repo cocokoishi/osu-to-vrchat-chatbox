@@ -87,8 +87,15 @@
             <TabItem x:Name="TabTemplates" Header="消息模板">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="12,12,12,12">
-                        <TextBlock Text="可用变量: {title} {artist} {version} {stars} {mode} {time_current} {time_total} {accuracy} {pp} {pp_fc} {rank} {mods} {combo} {max_combo} {player}"
-                                   Foreground="{StaticResource DimTextBrush}" TextWrapping="Wrap" Margin="0,0,0,14" FontSize="11"/>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,14" FontSize="11" Foreground="{StaticResource DimTextBrush}">
+                            <Run Text="可用变量:" FontWeight="Bold"/>
+                            <LineBreak/>
+                            <Run Text="  {title} {artist} {version} {stars} {mode} {mode_id} {path}"/>
+                            <LineBreak/>
+                            <Run Text="  {time_current} {time_total} {accuracy} {acc} {pp} {pp_fc} {rank} {mods} {mods_id} {combo} {max_combo} {miss} {player}"/>
+                            <LineBreak/>
+                            <Run Text="  判定统计: {n300} {n100} {n50} {ngeki} {nkatu} {passed_objects}  |  变速: {clock_rate}"/>
+                        </TextBlock>
 
                         <Label x:Name="LblTplPlaying1" Content="游玩中 (第一行):"/>
                         <TextBox x:Name="TbTplPlaying1" Margin="0,2,0,10"/>

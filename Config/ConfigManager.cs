@@ -80,9 +80,10 @@ namespace OsuOscVRC.Config
                 new[]
                 {
                     "{title} | {version} | ★{stars} | {rank} | {accuracy}% | {pp}PP",
-                    "{title} | {version} | 鈽厈stars} | {rank} | {accuracy}% | {pp}PP"
+                    "{title} | {version} | 鈽厈stars} | {rank} | {accuracy}% | {pp}PP",
+                    "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {pp}PP"
                 },
-                "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {pp}PP");
+                "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {miss}miss | {pp}PP");
 
             config.Templates.SongSelect = UpgradeTemplate(
                 config.Templates.SongSelect,
@@ -103,9 +104,10 @@ namespace OsuOscVRC.Config
                 new[]
                 {
                     "[Cleared!] {title} | {version} | ★{stars} | {rank} | Finally {accuracy}% | Get {pp}PP",
-                    "[Cleared!] {title} | {version} | 鈽厈stars} | {rank} | Finally {accuracy}% | Get {pp}PP"
+                    "[Cleared!] {title} | {version} | 鈽厈stars} | {rank} | Finally {accuracy}% | Get {pp}PP",
+                    "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | Get {pp}PP"
                 },
-                "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | Get {pp}PP");
+                "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | {accuracy}% | {miss}miss | Get {pp}PP");
 
             config.Templates.IdleText = UpgradeTemplate(
                 config.Templates.IdleText,

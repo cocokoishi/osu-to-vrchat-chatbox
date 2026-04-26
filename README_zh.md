@@ -37,25 +37,38 @@ dotnet run --project OsuOscVRC.csproj
 ### 模板变量
 
 ```
-{title}        {artist}       {version}      {stars}        {mode}
-{time_current} {time_total}   {accuracy}     {rank}
-{pp}           {pp_fc}        {combo}        {max_combo}
-{mods}         {player}
+{title}         {artist}        {version}       {stars}          {mode}
+{mode_id}       {path}          {time_current}  {time_total}
+{accuracy}      {acc}           {pp}            {pp_fc}
+{rank}          {mods}          {mods_id}       {combo}
+{max_combo}     {miss}          {player}
+{n300}          {n100}          {n50}           {ngeki}
+{nkatu}         {passed_objects}                {clock_rate}
 ```
 
-- `{mode}` — 使用「显示」选项卡中的自定义模式名。默认：osu! = `""`、taiko = `"taiko"`、catch = `"catch"`、mania = `"mania"`。
+- `{mode}` — 模式名称（可在「显示」选项卡中自定义）。默认：osu! = `""`、taiko = `"taiko"`、catch = `"catch"`、mania = `"mania"`。
+- `{mode_id}` — 模式数字 ID：0=osu!、1=Taiko、2=Catch、3=Mania。
+- `{path}` — .osu 谱面文件的完整路径。
+- `{accuracy}` / `{acc}` — 准确率 (0–100)。
+- `{mods}` — 模组名称字符串（如 `"DT,HD"`）。
+- `{mods_id}` — 模组位运算数字 ID（如 `64` = DT）。
+- `{miss}` — 失误次数。
 - `{player}` — 观看回放时显示回放对象的名字，其他状态显示自己的名字。
+- `{n300}`、`{n100}`、`{n50}`、`{ngeki}`、`{nkatu}` — 各判定数量。
+- `{passed_objects}` — 总通过物量 (n300 + n100 + n50 + miss + ngeki + nkatu)。
+- `{clock_rate}` — 由模组决定的变速倍率 (1.0 / 1.5 / 0.75)。
 
 ### 默认模板
 
 | 状态 | 第一行 | 第二行 |
 |------|--------|--------|
-| 游玩 | `Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
-| 暂停 | `[Paused] ` + 游玩第一行 | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
-| 失败 | `[Failed] ` + 游玩第一行 | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
+| 游玩 | `Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| 暂停 | `[Paused] ` + 游玩第一行 | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| 失败 | `[Failed] ` + 游玩第一行 | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | 选歌 | `Selecting osu!{mode} {title} [{version}] *{stars}` | *(同游玩)* |
-| 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| Finally {accuracy}% \| Get {pp}PP` | *(单行)* |
-| 观看回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
+| 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| {accuracy}% \| {miss}miss \| Get {pp}PP` | *(单行)* |
+| 回放结算 | `Replay result osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| {mods} \| {accuracy}% \| {miss}miss \| {pp}PP` | *(单行)* |
+| 观看回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | 编辑 | `Editing osu!{mode} {title} [{version}]` | *(单行)* |
 | 空闲 | `In osu! Lobby` | *(单行)* |
 

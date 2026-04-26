@@ -99,6 +99,28 @@ namespace OsuOscVRC.Formatter
             double accuracy = isResult ? (state.ResultsScreen?.Accuracy ?? 0) : (state.Play?.Accuracy ?? 0);
             double pp = isResult ? (state.ResultsScreen?.Pp?.Current ?? 0) : (state.Play?.Pp?.Current ?? 0);
             string rank = isResult ? (state.ResultsScreen?.Rank ?? "") : (state.Play?.Rank?.Current ?? "");
+            int miss = isResult ? (state.ResultsScreen?.Hits?.CountMiss ?? 0) : (state.Play?.Hits?.CountMiss ?? 0);
+
+            // Mode numeric ID and mods numeric ID
+            int modeId = isResult
+                ? (state.ResultsScreen?.Mode?.Number ?? state.Settings?.Mode?.Number ?? 0)
+                : (state.Play?.Mode?.Number ?? state.Settings?.Mode?.Number ?? 0);
+            int modsId = isResult
+                ? (state.ResultsScreen?.Mods?.Number ?? 0)
+                : (state.Play?.Mods?.Number ?? 0);
+
+            // Hit counts (with isResult logic)
+            int n300 = isResult ? (state.ResultsScreen?.Hits?.Count300 ?? 0) : (state.Play?.Hits?.Count300 ?? 0);
+            int n100 = isResult ? (state.ResultsScreen?.Hits?.Count100 ?? 0) : (state.Play?.Hits?.Count100 ?? 0);
+            int n50 = isResult ? (state.ResultsScreen?.Hits?.Count50 ?? 0) : (state.Play?.Hits?.Count50 ?? 0);
+            int ngeki = isResult ? (state.ResultsScreen?.Hits?.Geki ?? 0) : (state.Play?.Hits?.Geki ?? 0);
+            int nkatu = isResult ? (state.ResultsScreen?.Hits?.Katu ?? 0) : (state.Play?.Hits?.Katu ?? 0);
+            int passedObjects = n300 + n100 + n50 + miss + ngeki + nkatu;
+
+            // Clock rate: DT(64)/NC(512)=1.5, HT(256)=0.75, else 1.0
+            double clockRate = 1.0;
+            if ((modsId & 64) != 0 || (modsId & 512) != 0) clockRate = 1.5;
+            else if ((modsId & 256) != 0) clockRate = 0.75;
 
             var timeCurrent = forceTimeZero ? "0:00" : FormatTime(state.Beatmap?.Time?.Live ?? 0);
             var timeTotal = FormatTime(state.Beatmap?.Time?.LastObject ?? 0);
@@ -110,6 +132,8 @@ namespace OsuOscVRC.Formatter
             string accStr = accuracy.ToString($"F{config.AccuracyDecimals}");
             string ppStr = Math.Round(pp, config.PpDecimals).ToString($"F{config.PpDecimals}");
             string ppFcStr = Math.Round(state.Play?.Pp?.Fc ?? 0, config.PpDecimals).ToString($"F{config.PpDecimals}");
+            string path = state.DirectPath?.BeatmapFile ?? "";
+            string clockRateStr = clockRate.ToString("F2");
 
             var result = template
                 .Replace("{title}", title)
@@ -126,6 +150,18 @@ namespace OsuOscVRC.Formatter
                 .Replace("{mods}", mods)
                 .Replace("{combo}", (state.Play?.Combo?.Current ?? 0).ToString())
                 .Replace("{max_combo}", (state.Play?.Combo?.Max ?? 0).ToString())
+                .Replace("{miss}", miss.ToString())
+                .Replace("{path}", path)
+                .Replace("{mode_id}", modeId.ToString())
+                .Replace("{mods_id}", modsId.ToString())
+                .Replace("{acc}", accStr)
+                .Replace("{n300}", n300.ToString())
+                .Replace("{n100}", n100.ToString())
+                .Replace("{n50}", n50.ToString())
+                .Replace("{ngeki}", ngeki.ToString())
+                .Replace("{nkatu}", nkatu.ToString())
+                .Replace("{passed_objects}", passedObjects.ToString())
+                .Replace("{clock_rate}", clockRateStr)
                 .Replace("{player}", state.Play?.PlayerName ?? "");
 
             bool isWhiteSpace = !string.IsNullOrEmpty(result) && string.IsNullOrWhiteSpace(result);

@@ -37,25 +37,38 @@ A `config_osuosc.yaml` file is created on first launch. All settings can be edit
 ### Template Variables
 
 ```
-{title}        {artist}       {version}      {stars}        {mode}
-{time_current} {time_total}   {accuracy}     {rank}
-{pp}           {pp_fc}        {combo}        {max_combo}
-{mods}         {player}
+{title}         {artist}        {version}       {stars}          {mode}
+{mode_id}       {path}          {time_current}  {time_total}
+{accuracy}      {acc}           {pp}            {pp_fc}
+{rank}          {mods}          {mods_id}       {combo}
+{max_combo}     {miss}          {player}
+{n300}          {n100}          {n50}           {ngeki}
+{nkatu}         {passed_objects}                {clock_rate}
 ```
 
-- `{mode}` — uses the custom mode names from the Display tab. Defaults: osu! = `""`, taiko = `"taiko"`, catch = `"catch"`, mania = `"mania"`.
-- `{player}` — shows the replay author while watching replays, or your own name during normal play.
+- `{mode}` — mode name (customizable via Display tab). Defaults: `""` / `"taiko"` / `"catch"` / `"mania"`.
+- `{mode_id}` — mode numeric ID: 0=osu!, 1=Taiko, 2=Catch, 3=Mania.
+- `{path}` — full path to the .osu beatmap file.
+- `{accuracy}` / `{acc}` — accuracy percentage (0–100).
+- `{mods}` — mods name string (e.g. `"DT,HD"`).
+- `{mods_id}` — mods bitwise numeric ID (e.g. `64` = DT).
+- `{miss}` — miss count.
+- `{player}` — replay author while watching replays, or your own name during normal play.
+- `{n300}`, `{n100}`, `{n50}`, `{ngeki}`, `{nkatu}` — hit judgment counts.
+- `{passed_objects}` — total passed objects (n300 + n100 + n50 + miss + ngeki + nkatu).
+- `{clock_rate}` — speed multiplier derived from mods (1.0 / 1.5 / 0.75).
 
 ### Default Templates
 
 | State | Line 1 | Line 2 |
 |-------|--------|--------|
-| Playing | `Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
-| Paused | `[Paused] Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
-| Failed | `[Failed] Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
+| Playing | `Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| Paused | `[Paused] Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| Failed | `[Failed] Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | Song Select | `Selecting osu!{mode} {title} [{version}] *{stars}` | *(same as Playing)* |
-| Result | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| Finally {accuracy}% \| Get {pp}PP` | *(single line)* |
-| Watching Replay | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {mods} {pp}PP` |
+| Result | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| {accuracy}% \| {miss}miss \| Get {pp}PP` | *(single line)* |
+| Replay Result | `Replay result osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| {mods} \| {accuracy}% \| {miss}miss \| {pp}PP` | *(single line)* |
+| Watching Replay | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | Editor | `Editing osu!{mode} {title} [{version}]` | *(single line)* |
 | Idle | `In osu! Lobby` | *(single line)* |
 
