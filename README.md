@@ -1,152 +1,85 @@
-# osu! to VRChat Chatbox
+# osu! → VRChat Chatbox
 
-A small Windows desktop app that reads live gameplay data from [tosu](https://github.com/tosuapp/tosu) and sends formatted status text to the VRChat chatbox over OSC.
+把 osu! 的实时游戏数据发送到 VRChat 聊天框。
 
-This project is aimed at players who want their current osu! activity to appear in VRChat automatically, including gameplay, pause, replay, results, and failed runs.
+自动启动 tosu、连接 WebSocket、格式化文字、通过 OSC 发送到 VRChat。
 
-## Features
+## 功能
 
-- Launches and connects to `tosu` automatically
-- Sends chatbox text to VRChat over OSC
-- Live preview window before messages are sent
-- Editable templates for different game states
-- Supports:
-  - Playing
-  - Paused
-  - Failed
-  - Song Select
-  - Editor
-  - Replay
-  - Replay Result
-  - Result Screen
-  - Idle / Lobby
-- Adjustable update rate, result hold time, pause threshold, and message length
-- Unicode title support
-- Optional artist display
-- English / Chinese UI based on system UI language
+- 自动启动和连接 [tosu](https://github.com/tosuapp/tosu)
+- 支持多种游戏状态：选歌、游玩、暂停、失败、结算、回放、编辑、空闲
+- 每个状态可自定义聊天框模板
+- 支持 `{mode}` / `{artist}` / `{stars}` / `{pp}` 等变量
+- 支持 osu! / taiko / catch / mania 四种模式，模式名可自定义
+- 中文 / English 界面（跟随系统语言）
 
-## Requirements
+## 使用
 
-- Windows
-- .NET 8 SDK if you want to build from source
-- VRChat with OSC enabled
-- `tosu`
-- osu! stable or lazer supported by your `tosu` setup
+1. 下载最新 Release 并解压
+2. 确保 `tosu/tosu.exe` 存在（或手动指定路径）
+3. 打开 VRChat 的 OSC 功能
+4. 启动 `OsuOscVRC.exe`，点击「开始」
 
-## Quick Start
+启动后应用会自动：
+- 启动 tosu
+- 连接 tosu WebSocket
+- 发送聊天框消息到 `127.0.0.1:9000`
 
-### Option 1: Use a Release Build
+## 从源码运行
 
-1. Download the latest release zip from this repository.
-2. Extract it anywhere on your PC.
-3. Make sure the bundled `tosu` folder is present.
-4. Start `OsuOscVRC.exe`.
-5. In VRChat, make sure OSC is enabled.
-6. Click `Start` in the app.
-
-The app will:
-
-- start `tosu` if needed
-- connect to its websocket
-- send messages to VRChat on `127.0.0.1:9000`
-
-## Running From Source
+需要 .NET 8 SDK。
 
 ```powershell
-dotnet build .\OsuOscVRC.csproj
-dotnet run --project .\OsuOscVRC.csproj
+dotnet build OsuOscVRC.csproj
+dotnet run --project OsuOscVRC.csproj
 ```
 
-If you run from source, make sure `tosu.exe` exists at:
+## 配置
 
-```text
-tosu/tosu.exe
+首次运行生成 `config_osuosc.yaml`，所有设置可在 UI 中修改。
+
+### 模板变量
+
+```
+{title}   {artist}   {version}   {stars}   {mode}
+{time_current}   {time_total}   {accuracy}   {rank}
+{pp}   {pp_fc}   {combo}   {max_combo}   {mods}   {player}
 ```
 
-or update the path in the app UI.
+`{mode}` 的显示值对应「显示」选项卡里的模式名，默认 osu! 为空、其余为 `taiko` / `catch` / `mania`。
 
-## Configuration
+`{player}` 在观看回放时显示回放对象的名字，其他状态显示自己的名字。
 
-The app creates a config file on first launch:
+### 默认模板示例
 
-```text
-config_osuosc.yaml
+| 状态 | 模板 |
+|------|------|
+| 游玩 | `Playing osu!{mode} {title} [{version}] *{stars}` |
+| 暂停 | `[Paused] ` + 游玩模板 |
+| 失败 | `[Failed] ` + 游玩模板 |
+| 选歌 | `Selecting osu!{mode} {title} [{version}] *{stars}` |
+| 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| Finally {accuracy}% \| Get {pp}PP` |
+| 回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` |
+| 编辑 | `Editing osu!{mode} {title} [{version}]` |
+| 空闲 | `In osu! Lobby` |
+| tosu 未启动 | (空) |
+
+## 构建 Release 包
+
+GitHub Actions 在推送 `v*` 标签时自动构建并打包。
+
+用手动 publish：
+
+```powershell
+dotnet publish OsuOscVRC.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
 ```
 
-Default connection values:
+## 注意事项
 
-- `tosu host`: `127.0.0.1`
-- `tosu port`: `24050`
-- `VRChat OSC host`: `127.0.0.1`
-- `VRChat OSC port`: `9000`
+请尽量在私人房间使用，频繁变动的聊天框文本在公共场所可能打扰他人。
 
-### Main Config Areas
+## 免责声明
 
-- `Connection`
-  - `tosu.exe` path
-  - `tosu` websocket port
-  - VRChat OSC host / port
-- `Templates`
-  - message format for each state
-- `Display`
-  - unicode titles
-  - show artist
-  - decimal precision
-  - custom mode names
-- `Advanced`
-  - update interval
-  - result screen duration
-  - pause detection threshold
-  - reconnect delay
-  - max message length
-  - max title length
+本项目与 VRChat、ppy、tosu 项目无关，为非官方第三方工具。
 
-## Template Variables
-
-Available placeholders:
-
-```text
-{title} {artist} {version} {stars} {mode} {time_current} {time_total}
-{accuracy} {pp} {pp_fc} {rank} {mods} {combo} {max_combo} {player}
-```
-
-Example defaults:
-
-```text
-Playing line 1: Playing osu!{mode} {title} [{version}] ★{stars}
-Playing line 2: {time_current}/{time_total} {accuracy}% {mods} {pp}PP
-Paused prefix: [Paused]
-Result screen: [Cleared!] {title} | {version} | ★{stars} | {rank} | Finally {accuracy}% | Get {pp}PP
-```
-
-## State Notes
-
-- Failed gameplay is latched until the run exits, so it does not flicker back into `Paused`.
-- Replay detection is based on the current player name versus the local profile name.
-- Result states are held briefly to keep the chatbox readable.
-
-## Building a Release Package
-
-The repository includes a GitHub Actions workflow that:
-
-- publishes a self-contained Windows build
-- downloads the latest `tosu` Windows release
-- bundles everything into a release zip when a `v*` tag is pushed
-
-## Project Structure
-
-```text
-Config/      App config loading and defaults
-Data/        State models, tosu process manager, websocket client
-Formatter/   Chatbox text formatting
-I18n/        UI translation strings
-OSC/         VRChat OSC sender
-```
-
-## Usage Notice
-
-Please use this responsibly. Sending constantly changing status text into public spaces can be distracting. Private rooms are recommended.
-
-## Disclaimer
-
-This project is unofficial and is not affiliated with VRChat, ppy, or the tosu project.
+本项目完全使用 DeepSeek V4 Pro + Claude Code 完成，花费 6 RMB。
