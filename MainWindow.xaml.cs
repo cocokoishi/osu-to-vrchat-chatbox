@@ -24,6 +24,7 @@ namespace OsuOscVRC
 
         private GameState _currentGameState = GameState.NotRunning;
         private bool _wasWatchingReplay;
+        private bool _lastPlayFailed;
         private int _lastTimeLive = -1;
         private DateTime _lastTimeLiveChanged = DateTime.MinValue;
         private DateTime _resultScreenStartTime = DateTime.MinValue;
@@ -215,6 +216,7 @@ namespace OsuOscVRC
             BtnStop.IsEnabled = false;
             _currentGameState = GameState.NotRunning;
             _wasWatchingReplay = false;
+            _lastPlayFailed = false;
             UpdateStatus();
             TxtPreview.Text = "...";
         }
@@ -248,7 +250,9 @@ namespace OsuOscVRC
             int rawState = state.State?.Number ?? 0;
 
             // Forced result/replay-result hold
-            if (_currentGameState == GameState.ResultScreen || _currentGameState == GameState.ReplayResultScreen)
+            if (_currentGameState == GameState.ResultScreen
+                || _currentGameState == GameState.ReplayResultScreen
+                || _currentGameState == GameState.FailedResultScreen)
             {
                 bool holdExpired = (DateTime.Now - _resultScreenStartTime).TotalSeconds >= _config.ResultScreenDurationS;
                 if (!holdExpired && rawState != 2) return;
@@ -256,23 +260,30 @@ namespace OsuOscVRC
 
             if (rawState == 7)
             {
-                if (_currentGameState != GameState.ResultScreen && _currentGameState != GameState.ReplayResultScreen)
+                if (_currentGameState != GameState.ResultScreen
+                    && _currentGameState != GameState.ReplayResultScreen
+                    && _currentGameState != GameState.FailedResultScreen)
                 {
+                    bool isFailedResult = !_wasWatchingReplay
+                        && (_lastPlayFailed || string.Equals(state.ResultsScreen?.Rank, "F", StringComparison.OrdinalIgnoreCase));
                     _resultScreenStartTime = DateTime.Now;
-                    _currentGameState = _wasWatchingReplay ? GameState.ReplayResultScreen : GameState.ResultScreen;
+                    _currentGameState = _wasWatchingReplay
+                        ? GameState.ReplayResultScreen
+                        : isFailedResult ? GameState.FailedResultScreen : GameState.ResultScreen;
                 }
                 return;
             }
 
             // 1 = Edit, 4 = SelectEdit
-            if (rawState == 1 || rawState == 4) { _currentGameState = GameState.Editor; _wasWatchingReplay = false; return; }
+            if (rawState == 1 || rawState == 4) { _currentGameState = GameState.Editor; _wasWatchingReplay = false; _lastPlayFailed = false; return; }
 
-            if (rawState == 5) { _currentGameState = GameState.SongSelect; _wasWatchingReplay = false; return; }
+            if (rawState == 5) { _currentGameState = GameState.SongSelect; _wasWatchingReplay = false; _lastPlayFailed = false; return; }
 
             if (rawState == 2)
             {
                 string profileName = state.Profile?.Name ?? "";
                 string playerName = state.Play?.PlayerName ?? "";
+                bool hasFailed = state.Play?.Failed ?? false;
 
                 bool isReplay = false;
                 if (!isReplay && !string.IsNullOrEmpty(playerName))
@@ -290,6 +301,13 @@ namespace OsuOscVRC
                 }
 
                 _wasWatchingReplay = isReplay;
+                _lastPlayFailed = !isReplay && hasFailed;
+
+                if (hasFailed && !isReplay)
+                {
+                    _currentGameState = GameState.Failed;
+                    return;
+                }
 
                 int timeLive = state.Beatmap?.Time?.Live ?? 0;
                 if (timeLive != _lastTimeLive)
@@ -311,6 +329,7 @@ namespace OsuOscVRC
 
             _currentGameState = GameState.Idle;
             _wasWatchingReplay = false;
+            _lastPlayFailed = false;
         }
 
         private void UpdateStatus()

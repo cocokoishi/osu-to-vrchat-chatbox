@@ -33,11 +33,17 @@ namespace OsuOscVRC.Formatter
                 case GameState.Playing:
                     template = $"{config.Templates.PlayingLine1}\n{config.Templates.PlayingLine2}";
                     break;
+                case GameState.Failed:
+                    template = $"[Failed] {config.Templates.PlayingLine1}\n{config.Templates.PlayingLine2}";
+                    break;
                 case GameState.Paused:
                     template = $"{config.Templates.PausedPrefix}{config.Templates.PlayingLine1}\n{config.Templates.PlayingLine2}";
                     break;
                 case GameState.ReplayResultScreen:
                     template = config.Templates.ReplayResult ?? "";
+                    break;
+                case GameState.FailedResultScreen:
+                    template = $"[Failed] {config.Templates.ResultScreen}";
                     break;
                 case GameState.ResultScreen:
                     template = config.Templates.ResultScreen ?? "";
@@ -72,7 +78,9 @@ namespace OsuOscVRC.Formatter
                 version = version.Substring(0, maxLen) + "…";
 
             // Mode - tosu uses "Osu", "Taiko", "Fruits" (=catch), "Mania"
-            bool isResult = gameState == GameState.ResultScreen || gameState == GameState.ReplayResultScreen;
+            bool isResult = gameState == GameState.ResultScreen
+                || gameState == GameState.ReplayResultScreen
+                || gameState == GameState.FailedResultScreen;
             var mode = isResult
                 ? (state.ResultsScreen?.Mode?.Name ?? "").ToLower()
                 : (state.Play?.Mode?.Name ?? "").ToLower();

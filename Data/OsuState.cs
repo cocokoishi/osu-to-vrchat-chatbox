@@ -64,6 +64,7 @@ namespace OsuOscVRC.Data
 
     public class PlayData
     {
+        [JsonPropertyName("failed")] public bool Failed { get; set; }
         [JsonPropertyName("playerName")] public string PlayerName { get; set; } = "";
         [JsonPropertyName("mode")] public ModeData Mode { get; set; } = new();
         [JsonPropertyName("accuracy")] public double Accuracy { get; set; }
