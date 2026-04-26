@@ -8,7 +8,7 @@ namespace OsuOscVRC.Config
         public string VRChatOscHost { get; set; } = "127.0.0.1";
         public int VRChatOscPort { get; set; } = 9000;
 
-        public int UpdateIntervalMs { get; set; } = 1600;
+        public int UpdateIntervalMs { get; set; } = 2689;
         public int ResultScreenDurationS { get; set; } = 0;
         public int PauseDetectionThresholdMs { get; set; } = 500;
         public int ReconnectDelayMs { get; set; } = 5000;
@@ -28,14 +28,14 @@ namespace OsuOscVRC.Config
 
     public class TemplatesConfig
     {
-        public string PlayingLine1 { get; set; } = "Playing osu!{mode} {title} [{version}] *{stars}";
+        public string PlayingLine1 { get; set; } = "Playing osu!{mode} {title} [{version}] {stars}⭐";
         public string PlayingLine2 { get; set; } = "{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP";
         public string PausedPrefix { get; set; } = "[Paused] ";
-        public string WatchingReplay { get; set; } = "Watching osu!{mode} {title} [{version}] *{stars} played by {player}";
-        public string ReplayResult { get; set; } = "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {miss}miss | {pp}PP";
-        public string SongSelect { get; set; } = "Selecting osu!{mode} {title} [{version}] *{stars}";
+        public string WatchingReplay { get; set; } = "Watching osu!{mode} {title} [{version}] {stars}⭐ played by {player}";
+        public string ReplayResult { get; set; } = "Replay result osu!{mode} {title} [{version}] {stars}⭐ {rank} {mods} {accuracy}% {miss}miss {pp}PP";
+        public string SongSelect { get; set; } = "Selecting osu!{mode} {title} [{version}] {stars}⭐";
         public string Editor { get; set; } = "Editing osu!{mode} {title} [{version}]";
-        public string ResultScreen { get; set; } = "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | {accuracy}% | {miss}miss | Get {pp}PP";
+        public string ResultScreen { get; set; } = "[Cleared!] osu!{mode} {title} [{version}] {stars}⭐ {mods} {rank} {accuracy}% {miss}miss Get {pp}PP";
         public string IdleText { get; set; } = "In osu! Lobby";
         public string NotRunning { get; set; } = "";
     }

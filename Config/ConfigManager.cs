@@ -73,7 +73,7 @@ namespace OsuOscVRC.Config
                     "Watching {title} [{version}] ★{stars} played by {player}",
                     "Watching {title} [{version}] 鈽厈stars} played by {player}"
                 },
-                "Watching osu!{mode} {title} [{version}] *{stars} played by {player}");
+                "Watching osu!{mode} {title} [{version}] {stars}⭐ played by {player}");
 
             config.Templates.ReplayResult = UpgradeTemplate(
                 config.Templates.ReplayResult,
@@ -83,7 +83,7 @@ namespace OsuOscVRC.Config
                     "{title} | {version} | 鈽厈stars} | {rank} | {accuracy}% | {pp}PP",
                     "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {pp}PP"
                 },
-                "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {miss}miss | {pp}PP");
+                "Replay result osu!{mode} {title} [{version}] {stars}⭐ {rank} {mods} {accuracy}% {miss}miss {pp}PP");
 
             config.Templates.SongSelect = UpgradeTemplate(
                 config.Templates.SongSelect,
@@ -92,7 +92,7 @@ namespace OsuOscVRC.Config
                     "Idle: {title} [{version}] ★{stars}",
                     "Idle: {title} [{version}] 鈽厈stars}"
                 },
-                "Selecting osu!{mode} {title} [{version}] *{stars}");
+                "Selecting osu!{mode} {title} [{version}] {stars}⭐");
 
             config.Templates.Editor = UpgradeTemplate(
                 config.Templates.Editor,
@@ -107,7 +107,7 @@ namespace OsuOscVRC.Config
                     "[Cleared!] {title} | {version} | 鈽厈stars} | {rank} | Finally {accuracy}% | Get {pp}PP",
                     "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | Get {pp}PP"
                 },
-                "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | {accuracy}% | {miss}miss | Get {pp}PP");
+                "[Cleared!] osu!{mode} {title} [{version}] {stars}⭐ {mods} {rank} {accuracy}% {miss}miss Get {pp}PP");
 
             config.Templates.IdleText = UpgradeTemplate(
                 config.Templates.IdleText,

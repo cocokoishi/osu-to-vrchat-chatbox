@@ -62,13 +62,13 @@ dotnet run --project OsuOscVRC.csproj
 
 | 状态 | 第一行 | 第二行 |
 |------|--------|--------|
-| 游玩 | `Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| 游玩 | `Playing osu!{mode} {title} [{version}] {stars}⭐` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | 暂停 | `[Paused] ` + 游玩第一行 | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | 失败 | `[Failed] ` + 游玩第一行 | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
-| 选歌 | `Selecting osu!{mode} {title} [{version}] *{stars}` | *(同游玩)* |
-| 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| {accuracy}% \| {miss}miss \| Get {pp}PP` | *(单行)* |
-| 回放结算 | `Replay result osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| {mods} \| {accuracy}% \| {miss}miss \| {pp}PP` | *(单行)* |
-| 观看回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| 选歌 | `Selecting osu!{mode} {title} [{version}] {stars}⭐` | *(同游玩)* |
+| 结算 | `[Cleared!] osu!{mode} {title} [{version}] {stars}⭐ {mods} {rank} {accuracy}% {miss}miss Get {pp}PP` | *(单行)* |
+| 回放结算 | `Replay result osu!{mode} {title} [{version}] {stars}⭐ {rank} {mods} {accuracy}% {miss}miss {pp}PP` | *(单行)* |
+| 观看回放 | `Watching osu!{mode} {title} [{version}] {stars}⭐ played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | 编辑 | `Editing osu!{mode} {title} [{version}]` | *(单行)* |
 | 空闲 | `In osu! Lobby` | *(单行)* |
 

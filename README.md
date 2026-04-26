@@ -62,13 +62,13 @@ A `config_osuosc.yaml` file is created on first launch. All settings can be edit
 
 | State | Line 1 | Line 2 |
 |-------|--------|--------|
-| Playing | `Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
-| Paused | `[Paused] Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
-| Failed | `[Failed] Playing osu!{mode} {title} [{version}] *{stars}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
-| Song Select | `Selecting osu!{mode} {title} [{version}] *{stars}` | *(same as Playing)* |
-| Result | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| {accuracy}% \| {miss}miss \| Get {pp}PP` | *(single line)* |
-| Replay Result | `Replay result osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| {mods} \| {accuracy}% \| {miss}miss \| {pp}PP` | *(single line)* |
-| Watching Replay | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| Playing | `Playing osu!{mode} {title} [{version}] {stars}⭐` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| Paused | `[Paused] Playing osu!{mode} {title} [{version}] {stars}⭐` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| Failed | `[Failed] Playing osu!{mode} {title} [{version}] {stars}⭐` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
+| Song Select | `Selecting osu!{mode} {title} [{version}] {stars}⭐` | *(same as Playing)* |
+| Result | `[Cleared!] osu!{mode} {title} [{version}] {stars}⭐ {mods} {rank} {accuracy}% {miss}miss Get {pp}PP` | *(single line)* |
+| Replay Result | `Replay result osu!{mode} {title} [{version}] {stars}⭐ {rank} {mods} {accuracy}% {miss}miss {pp}PP` | *(single line)* |
+| Watching Replay | `Watching osu!{mode} {title} [{version}] {stars}⭐ played by {player}` | `{time_current}/{time_total} {accuracy}% {combo}x {miss}miss {mods} {pp}PP` |
 | Editor | `Editing osu!{mode} {title} [{version}]` | *(single line)* |
 | Idle | `In osu! Lobby` | *(single line)* |
 
