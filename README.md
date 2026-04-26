@@ -1,44 +1,41 @@
 # osu! → VRChat Chatbox
 
-把 osu! 的实时游戏数据发送到 VRChat 聊天框。
+Sends real-time osu! gameplay data to the VRChat chatbox.
 
-自动启动 tosu、连接 WebSocket、格式化文字、通过 OSC 发送到 VRChat。
+Automatically launches tosu, connects to its WebSocket, formats status text, and sends it to VRChat via OSC.
 
-## 功能
+## Features
 
-- 自动启动和连接 [tosu](https://github.com/tosuapp/tosu)
-- 支持多种游戏状态：选歌、游玩、暂停、失败、结算、回放、编辑、空闲
-- 每个状态可自定义聊天框模板
-- 支持 `{mode}` / `{artist}` / `{stars}` / `{pp}` 等变量
-- 支持 osu! / taiko / catch / mania 四种模式，模式名可自定义
-- 中文 / English 界面（跟随系统语言）
+- Auto-launch and connect to [tosu](https://github.com/tosuapp/tosu)
+- Supports multiple game states: Song Select, Playing, Paused, Failed, Result, Replay, Editor, Idle
+- Customizable chatbox templates per state
+- Template variables: `{mode}`, `{artist}`, `{stars}`, `{pp}`, and more
+- Supports osu! / taiko / catch / mania modes with customizable mode names
+- English / Chinese UI based on system language
 
-## 使用
+## Usage
 
-1. 下载最新 Release 并解压
-2. 确保 `tosu/tosu.exe` 存在（或手动指定路径）
-3. 打开 VRChat 的 OSC 功能
-4. 启动 `OsuOscVRC.exe`，点击「开始」
+1. Download the latest release and extract it
+2. Ensure `tosu/tosu.exe` exists (or set the path manually in the app)
+3. Enable OSC in VRChat
+4. Launch `OsuOscVRC.exe` and click Start
 
-启动后应用会自动：
-- 启动 tosu
-- 连接 tosu WebSocket
-- 发送聊天框消息到 `127.0.0.1:9000`
+When started, the app will automatically start tosu, connect to its WebSocket, and send chatbox messages to `127.0.0.1:9000`.
 
-## 从源码运行
+## Running From Source
 
-需要 .NET 8 SDK。
+Requires .NET 8 SDK.
 
 ```powershell
 dotnet build OsuOscVRC.csproj
 dotnet run --project OsuOscVRC.csproj
 ```
 
-## 配置
+## Configuration
 
-首次运行生成 `config_osuosc.yaml`，所有设置可在 UI 中修改。
+A `config_osuosc.yaml` file is created on first launch. All settings can be edited from the UI.
 
-### 模板变量
+### Template Variables
 
 ```
 {title}   {artist}   {version}   {stars}   {mode}
@@ -46,40 +43,40 @@ dotnet run --project OsuOscVRC.csproj
 {pp}   {pp_fc}   {combo}   {max_combo}   {mods}   {player}
 ```
 
-`{mode}` 的显示值对应「显示」选项卡里的模式名，默认 osu! 为空、其余为 `taiko` / `catch` / `mania`。
+`{mode}` uses the custom mode names from the Display tab. By default, osu! mode is empty and the rest are `taiko` / `catch` / `mania`.
 
-`{player}` 在观看回放时显示回放对象的名字，其他状态显示自己的名字。
+`{player}` shows the replay author's name while watching replays, or your own name during normal play.
 
-### 默认模板示例
+### Default Templates
 
-| 状态 | 模板 |
-|------|------|
-| 游玩 | `Playing osu!{mode} {title} [{version}] *{stars}` |
-| 暂停 | `[Paused] ` + 游玩模板 |
-| 失败 | `[Failed] ` + 游玩模板 |
-| 选歌 | `Selecting osu!{mode} {title} [{version}] *{stars}` |
-| 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| Finally {accuracy}% \| Get {pp}PP` |
-| 回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` |
-| 编辑 | `Editing osu!{mode} {title} [{version}]` |
-| 空闲 | `In osu! Lobby` |
-| tosu 未启动 | (空) |
+| State | Template |
+|-------|----------|
+| Playing | `Playing osu!{mode} {title} [{version}] *{stars}` |
+| Paused | `[Paused] ` + Playing template |
+| Failed | `[Failed] ` + Playing template |
+| Song Select | `Selecting osu!{mode} {title} [{version}] *{stars}` |
+| Result | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| Finally {accuracy}% \| Get {pp}PP` |
+| Replay | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` |
+| Editor | `Editing osu!{mode} {title} [{version}]` |
+| Idle | `In osu! Lobby` |
+| tosu not running | (empty) |
 
-## 构建 Release 包
+## Building a Release
 
-GitHub Actions 在推送 `v*` 标签时自动构建并打包。
+GitHub Actions builds and packages a release automatically when a `v*` tag is pushed.
 
-用手动 publish：
+To build manually:
 
 ```powershell
 dotnet publish OsuOscVRC.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
 ```
 
-## 注意事项
+## Notes
 
-请尽量在私人房间使用，频繁变动的聊天框文本在公共场所可能打扰他人。
+Please use this in private rooms. Frequently updating chatbox text can be distracting in public spaces.
 
-## 免责声明
+## Disclaimer
 
-本项目与 VRChat、ppy、tosu 项目无关，为非官方第三方工具。
+This project is unofficial and not affiliated with VRChat, ppy, or the tosu project.
 
-本项目完全使用 DeepSeek V4 Pro + Claude Code 完成，花费 6 RMB。
+This project was built entirely with DeepSeek V4 Pro + Claude Code. Cost: 6 RMB.
