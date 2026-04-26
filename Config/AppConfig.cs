@@ -9,7 +9,7 @@ namespace OsuOscVRC.Config
         public int VRChatOscPort { get; set; } = 9000;
 
         public int UpdateIntervalMs { get; set; } = 1600;
-        public int ResultScreenDurationS { get; set; } = 10;
+        public int ResultScreenDurationS { get; set; } = 0;
         public int PauseDetectionThresholdMs { get; set; } = 500;
         public int ReconnectDelayMs { get; set; } = 5000;
         public int MaxMessageLength { get; set; } = 144;
