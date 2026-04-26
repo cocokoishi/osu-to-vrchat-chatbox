@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.Windows;
+using OsuOscVRC.I18n;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using OsuOscVRC.I18n;
 
 namespace OsuOscVRC.Config
 {
@@ -28,15 +28,9 @@ namespace OsuOscVRC.Config
                     .Build();
 
                 var yaml = File.ReadAllText(ConfigPath);
-                var config = deserializer.Deserialize<AppConfig>(yaml);
-                
-                // Set default for replay if it was missing in an old config
-                if (string.IsNullOrEmpty(config.Templates.WatchingReplay))
-                {
-                    config.Templates.WatchingReplay = "Watching {title} [{version}] ★{stars} played by {player}";
-                }
-                
-                return config ?? new AppConfig();
+                var config = deserializer.Deserialize<AppConfig>(yaml) ?? new AppConfig();
+                UpgradeTemplateDefaults(config);
+                return config;
             }
             catch (Exception ex)
             {
@@ -68,6 +62,73 @@ namespace OsuOscVRC.Config
                 config.FirstRunDone = true;
                 Save(config);
             }
+        }
+
+        private static void UpgradeTemplateDefaults(AppConfig config)
+        {
+            config.Templates.WatchingReplay = UpgradeTemplate(
+                config.Templates.WatchingReplay,
+                new[]
+                {
+                    "Watching {title} [{version}] ★{stars} played by {player}",
+                    "Watching {title} [{version}] 鈽厈stars} played by {player}"
+                },
+                "Watching osu!{mode} {title} [{version}] *{stars} played by {player}");
+
+            config.Templates.ReplayResult = UpgradeTemplate(
+                config.Templates.ReplayResult,
+                new[]
+                {
+                    "{title} | {version} | ★{stars} | {rank} | {accuracy}% | {pp}PP",
+                    "{title} | {version} | 鈽厈stars} | {rank} | {accuracy}% | {pp}PP"
+                },
+                "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {accuracy}% | {pp}PP");
+
+            config.Templates.SongSelect = UpgradeTemplate(
+                config.Templates.SongSelect,
+                new[]
+                {
+                    "Idle: {title} [{version}] ★{stars}",
+                    "Idle: {title} [{version}] 鈽厈stars}"
+                },
+                "Selecting osu!{mode} {title} [{version}] *{stars}");
+
+            config.Templates.Editor = UpgradeTemplate(
+                config.Templates.Editor,
+                new[] { "Editing: {title} [{version}]" },
+                "Editing osu!{mode} {title} [{version}]");
+
+            config.Templates.ResultScreen = UpgradeTemplate(
+                config.Templates.ResultScreen,
+                new[]
+                {
+                    "[Cleared!] {title} | {version} | ★{stars} | {rank} | Finally {accuracy}% | Get {pp}PP",
+                    "[Cleared!] {title} | {version} | 鈽厈stars} | {rank} | Finally {accuracy}% | Get {pp}PP"
+                },
+                "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {rank} | Finally {accuracy}% | Get {pp}PP");
+
+            config.Templates.IdleText = UpgradeTemplate(
+                config.Templates.IdleText,
+                new[] { "In Lobby" },
+                "In osu! Lobby");
+        }
+
+        private static string UpgradeTemplate(string currentValue, string[] oldDefaults, string newDefault)
+        {
+            if (string.IsNullOrWhiteSpace(currentValue))
+            {
+                return newDefault;
+            }
+
+            foreach (var oldDefault in oldDefaults)
+            {
+                if (currentValue == oldDefault)
+                {
+                    return newDefault;
+                }
+            }
+
+            return currentValue;
         }
     }
 }
