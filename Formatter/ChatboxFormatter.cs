@@ -103,6 +103,8 @@ namespace OsuOscVRC.Formatter
             var timeCurrent = forceTimeZero ? "0:00" : FormatTime(state.Beatmap?.Time?.Live ?? 0);
             var timeTotal = FormatTime(state.Beatmap?.Time?.LastObject ?? 0);
             string mods = state.Play?.Mods?.Name ?? "";
+            if (string.IsNullOrEmpty(mods)) mods = "NM";
+            int miss = isResult ? (state.ResultsScreen?.Hits?.Miss ?? 0) : (state.Play?.Hits?.Miss ?? 0);
 
             double stars = state.Beatmap?.Stats?.Stars?.Total ?? 0;
             if (stars == 0) stars = state.Beatmap?.Stats?.Stars?.Live ?? 0;
@@ -124,6 +126,7 @@ namespace OsuOscVRC.Formatter
                 .Replace("{pp_fc}", ppFcStr)
                 .Replace("{rank}", rank)
                 .Replace("{mods}", mods)
+                .Replace("{miss}", miss.ToString())
                 .Replace("{combo}", (state.Play?.Combo?.Current ?? 0).ToString())
                 .Replace("{max_combo}", (state.Play?.Combo?.Max ?? 0).ToString())
                 .Replace("{player}", state.Play?.PlayerName ?? "");

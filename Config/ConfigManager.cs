@@ -103,9 +103,26 @@ namespace OsuOscVRC.Config
                 new[]
                 {
                     "[Cleared!] {title} | {version} | ★{stars} | {rank} | Finally {accuracy}% | Get {pp}PP",
-                    "[Cleared!] {title} | {version} | 鈽厈stars} | {rank} | Finally {accuracy}% | Get {pp}PP"
+                    "[Cleared!] {title} | {version} | 鈽厈stars} | {rank} | Finally {accuracy}% | Get {pp}PP",
+                    "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | Get {pp}PP"
                 },
-                "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | Get {pp}PP");
+                "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | {miss}miss | Get {pp}PP");
+
+            config.Templates.PlayingLine2 = UpgradeTemplate(
+                config.Templates.PlayingLine2,
+                new[]
+                {
+                    "{time_current}/{time_total} {accuracy}% {mods} {pp}PP"
+                },
+                "{time_current}/{time_total} {accuracy}% {miss}miss {mods} {pp}PP");
+
+            config.Templates.ReplayResult = UpgradeTemplate(
+                config.Templates.ReplayResult,
+                new[]
+                {
+                    "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {pp}PP"
+                },
+                "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {miss}miss | {pp}PP");
 
             config.Templates.IdleText = UpgradeTemplate(
                 config.Templates.IdleText,

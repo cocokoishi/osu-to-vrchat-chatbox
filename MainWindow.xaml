@@ -87,8 +87,7 @@
             <TabItem x:Name="TabTemplates" Header="消息模板">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="12,12,12,12">
-                        <TextBlock Text="可用变量: {title} {artist} {version} {stars} {mode} {time_current} {time_total} {accuracy} {pp} {pp_fc} {rank} {mods} {combo} {max_combo} {player}"
-                                   Foreground="{StaticResource DimTextBrush}" TextWrapping="Wrap" Margin="0,0,0,14" FontSize="11"/>
+                        <TextBlock x:Name="TxtTplVarsHint" Foreground="{StaticResource DimTextBrush}" TextWrapping="Wrap" Margin="0,0,0,14" FontSize="11"/>
 
                         <Label x:Name="LblTplPlaying1" Content="游玩中 (第一行):"/>
                         <TextBox x:Name="TbTplPlaying1" Margin="0,2,0,10"/>
@@ -116,6 +115,12 @@
 
                         <Label x:Name="LblTplIdle" Content="大厅/空闲:"/>
                         <TextBox x:Name="TbTplIdle" Margin="0,2,0,10"/>
+
+                        <TextBlock x:Name="LblTplVarsTitle" FontWeight="SemiBold" Margin="0,6,0,4"/>
+                        <TextBox x:Name="TbTplVarsAll" IsReadOnly="True" FontFamily="Consolas"
+                                 Background="{StaticResource PanelBrush}" Foreground="{StaticResource TextBrush}"
+                                 TextWrapping="Wrap" Margin="0,2,0,4" BorderThickness="1"
+                                 BorderBrush="{StaticResource BorderBrush}" FontSize="12" MinHeight="72"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

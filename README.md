@@ -12,6 +12,7 @@ Automatically launches tosu, connects to its WebSocket, formats status text, and
 - Template variables: `{mode}`, `{artist}`, `{stars}`, `{pp}`, and more
 - Supports osu! / taiko / catch / mania modes with customizable mode names
 - English / Chinese UI based on system language
+- Works with both osu! Stable and osu! Lazer
 
 ## Usage
 
@@ -38,9 +39,22 @@ A `config_osuosc.yaml` file is created on first launch. All settings can be edit
 ### Template Variables
 
 ```
-{title}   {artist}   {version}   {stars}   {mode}
-{time_current}   {time_total}   {accuracy}   {rank}
-{pp}   {pp_fc}   {combo}   {max_combo}   {mods}   {player}
+{title}      Beatmap title
+{artist}     Artist name
+{version}    Difficulty name
+{stars}      Star rating
+{mode}       Mode name (customizable)
+{time_current}  Current time (m:ss)
+{time_total}    Total time (m:ss)
+{accuracy}   Accuracy
+{pp}         Current PP
+{pp_fc}      Full-combo PP
+{rank}       Grade (SS/S/A/B/C/D/F)
+{mods}       Active mods (shows NM if none)
+{miss}       Miss count
+{combo}      Current combo
+{max_combo}  Max combo
+{player}     Player name / replay author
 ```
 
 `{mode}` uses the custom mode names from the Display tab. By default, osu! mode is empty and the rest are `taiko` / `catch` / `mania`.
@@ -55,21 +69,11 @@ A `config_osuosc.yaml` file is created on first launch. All settings can be edit
 | Paused | `[Paused] ` + Playing template |
 | Failed | `[Failed] ` + Playing template |
 | Song Select | `Selecting osu!{mode} {title} [{version}] *{stars}` |
-| Result | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| Finally {accuracy}% \| Get {pp}PP` |
+| Result | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| Finally {accuracy}% \| {miss}miss \| Get {pp}PP` |
 | Replay | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` |
 | Editor | `Editing osu!{mode} {title} [{version}]` |
 | Idle | `In osu! Lobby` |
 | tosu not running | (empty) |
-
-## Building a Release
-
-GitHub Actions builds and packages a release automatically when a `v*` tag is pushed.
-
-To build manually:
-
-```powershell
-dotnet publish OsuOscVRC.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
-```
 
 ## Notes
 
@@ -78,5 +82,3 @@ Please use this in private rooms. Frequently updating chatbox text can be distra
 ## Disclaimer
 
 This project is unofficial and not affiliated with VRChat, ppy, or the tosu project.
-
-This project was built entirely with DeepSeek V4 Pro + Claude Code. Cost: 6 RMB.

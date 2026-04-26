@@ -12,6 +12,7 @@
 - 支持 `{mode}` / `{artist}` / `{stars}` / `{pp}` 等变量
 - 支持 osu! / taiko / catch / mania 四种模式，模式名可自定义
 - 中文 / English 界面（跟随系统语言）
+- 同时支持 osu! Stable 和 osu! Lazer
 
 ## 使用
 
@@ -38,9 +39,22 @@ dotnet run --project OsuOscVRC.csproj
 ### 模板变量
 
 ```
-{title}   {artist}   {version}   {stars}   {mode}
-{time_current}   {time_total}   {accuracy}   {rank}
-{pp}   {pp_fc}   {combo}   {max_combo}   {mods}   {player}
+{title}      谱面标题
+{artist}     艺术家
+{version}    难度名
+{stars}      星数
+{mode}       模式名（可自定义）
+{time_current}  当前时间 (m:ss)
+{time_total}    总时长 (m:ss)
+{accuracy}   准确度
+{pp}         当前 PP
+{pp_fc}      FC PP
+{rank}       评级 (SS/S/A/B/C/D/F)
+{mods}       模组（无模组显示 NM）
+{miss}       miss 数量
+{combo}      当前连击
+{max_combo}  最大连击
+{player}     玩家名 / 回放作者
 ```
 
 `{mode}` 使用「显示」选项卡里的自定义模式名，默认 osu! 为空、其余为 `taiko` / `catch` / `mania`。
@@ -55,21 +69,11 @@ dotnet run --project OsuOscVRC.csproj
 | 暂停 | `[Paused] ` + 游玩模板 |
 | 失败 | `[Failed] ` + 游玩模板 |
 | 选歌 | `Selecting osu!{mode} {title} [{version}] *{stars}` |
-| 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| Finally {accuracy}% \| Get {pp}PP` |
+| 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| Finally {accuracy}% \| {miss}miss \| Get {pp}PP` |
 | 回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` |
 | 编辑 | `Editing osu!{mode} {title} [{version}]` |
 | 空闲 | `In osu! Lobby` |
 | tosu 未启动 | (空) |
-
-## 构建 Release 包
-
-推送 `v*` 标签时 GitHub Actions 自动构建并打包。
-
-手动构建：
-
-```powershell
-dotnet publish OsuOscVRC.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
-```
 
 ## 注意事项
 
@@ -78,5 +82,3 @@ dotnet publish OsuOscVRC.csproj -c Release -r win-x64 --self-contained true -p:P
 ## 免责声明
 
 本项目与 VRChat、ppy、tosu 项目无关，为非官方第三方工具。
-
-本项目完全使用 DeepSeek V4 Pro + Claude Code 完成，花费 6 RMB。

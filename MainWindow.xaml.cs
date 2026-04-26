@@ -65,6 +65,9 @@ namespace OsuOscVRC
             LblTplResult.Content = Translator.Get("TplResult");
             LblTplEditor.Content = Translator.Get("TplEditor");
             LblTplIdle.Content = Translator.Get("TplIdle");
+            TxtTplVarsHint.Text = Translator.Get("TplVarsHint");
+            LblTplVarsTitle.Text = Translator.Get("TplVarsTitle");
+            TbTplVarsAll.Text = Translator.Get("TplVarsAll");
             CbUseUnicode.Content = Translator.Get("DispUseUnicode");
             CbShowArtist.Content = Translator.Get("DispShowArtist");
             LblDispStar.Content = Translator.Get("DispStarDecimals");

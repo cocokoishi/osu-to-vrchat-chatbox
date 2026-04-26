@@ -72,7 +72,19 @@ namespace OsuOscVRC.Data
         [JsonPropertyName("rank")] public RankData Rank { get; set; } = new();
         [JsonPropertyName("mods")] public ModsData Mods { get; set; } = new();
         [JsonPropertyName("combo")] public ComboData Combo { get; set; } = new();
+        [JsonPropertyName("hits")] public HitCounts Hits { get; set; } = new();
         [JsonPropertyName("isReplay")] public bool IsReplay { get; set; }
+    }
+
+    public class HitCounts
+    {
+        [JsonPropertyName("300")] public int Count300 { get; set; }
+        [JsonPropertyName("geki")] public int Geki { get; set; }
+        [JsonPropertyName("100")] public int Count100 { get; set; }
+        [JsonPropertyName("katu")] public int Katu { get; set; }
+        [JsonPropertyName("50")] public int Count50 { get; set; }
+        [JsonPropertyName("0")] public int Miss { get; set; }
+        [JsonPropertyName("sliderBreaks")] public int SliderBreaks { get; set; }
     }
 
     public class ComboData
@@ -103,5 +115,6 @@ namespace OsuOscVRC.Data
         [JsonPropertyName("mode")] public ModeData Mode { get; set; } = new();
         [JsonPropertyName("rank")] public string Rank { get; set; } = "";
         [JsonPropertyName("pp")] public PpData Pp { get; set; } = new();
+        [JsonPropertyName("hits")] public HitCounts Hits { get; set; } = new();
     }
 }

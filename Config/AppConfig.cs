@@ -29,13 +29,13 @@ namespace OsuOscVRC.Config
     public class TemplatesConfig
     {
         public string PlayingLine1 { get; set; } = "Playing osu!{mode} {title} [{version}] *{stars}";
-        public string PlayingLine2 { get; set; } = "{time_current}/{time_total} {accuracy}% {mods} {pp}PP";
+        public string PlayingLine2 { get; set; } = "{time_current}/{time_total} {accuracy}% {miss}miss {mods} {pp}PP";
         public string PausedPrefix { get; set; } = "[Paused] ";
         public string WatchingReplay { get; set; } = "Watching osu!{mode} {title} [{version}] *{stars} played by {player}";
-        public string ReplayResult { get; set; } = "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {pp}PP";
+        public string ReplayResult { get; set; } = "Replay result osu!{mode} {title} | {version} | *{stars} | {rank} | {mods} | {accuracy}% | {miss}miss | {pp}PP";
         public string SongSelect { get; set; } = "Selecting osu!{mode} {title} [{version}] *{stars}";
         public string Editor { get; set; } = "Editing osu!{mode} {title} [{version}]";
-        public string ResultScreen { get; set; } = "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | Get {pp}PP";
+        public string ResultScreen { get; set; } = "[Cleared!] osu!{mode} {title} | {version} | *{stars} | {mods} | {rank} | Finally {accuracy}% | {miss}miss | Get {pp}PP";
         public string IdleText { get; set; } = "In osu! Lobby";
         public string NotRunning { get; set; } = "";
     }
