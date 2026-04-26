@@ -10,13 +10,14 @@ namespace OsuOscVRC.Data
 {
     public class TosuWebSocketClient : IDisposable
     {
-        private ClientWebSocket? _webSocket;
+        private volatile ClientWebSocket? _webSocket;
         private CancellationTokenSource? _cts;
         private readonly string _uri;
         private readonly int _reconnectDelayMs;
         private TaskCompletionSource<bool>? _initialConnectionTcs;
 
-        public OsuState? LatestState { get; private set; }
+        private volatile OsuState? _latestState;
+        public OsuState? LatestState => _latestState;
         public bool IsConnected => _webSocket?.State == WebSocketState.Open;
 
         public event Action<OsuState>? OnStateUpdated;
@@ -61,13 +62,14 @@ namespace OsuOscVRC.Data
         {
             _cts?.Cancel();
 
-            if (_webSocket != null)
+            // Abort only — let ReceiveLoopAsync's using block call Dispose on the local instance.
+            var ws = _webSocket;
+            if (ws != null)
             {
-                if (_webSocket.State == WebSocketState.Open)
+                if (ws.State == WebSocketState.Open)
                 {
-                    _webSocket.Abort();
+                    ws.Abort();
                 }
-                _webSocket.Dispose();
                 _webSocket = null;
             }
 
@@ -113,7 +115,7 @@ namespace OsuOscVRC.Data
                                 var state = JsonSerializer.Deserialize<OsuState>(ms);
                                 if (state != null)
                                 {
-                                    LatestState = state;
+                                    _latestState = state;
                                     OnStateUpdated?.Invoke(state);
                                 }
                             }

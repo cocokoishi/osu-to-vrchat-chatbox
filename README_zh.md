@@ -65,19 +65,23 @@ dotnet run --project OsuOscVRC.csproj
 
 | 状态 | 模板 |
 |------|------|
-| 游玩 | `Playing osu!{mode} {title} [{version}] *{stars}` |
-| 暂停 | `[Paused] ` + 游玩模板 |
-| 失败 | `[Failed] ` + 游玩模板 |
+| 游玩 | `Playing osu!{mode} {title} [{version}] *{stars}`（第一行） |
+| 游玩（第二行） | `{time_current}/{time_total} {accuracy}% {miss}miss {mods} {pp}PP` |
+| 暂停 | `[Paused] ` + 游玩第一行 + 第二行 |
+| 失败 | `[Failed] ` + 游玩第一行 + 第二行 |
 | 选歌 | `Selecting osu!{mode} {title} [{version}] *{stars}` |
 | 结算 | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| Finally {accuracy}% \| {miss}miss \| Get {pp}PP` |
-| 回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` |
+| 回放 | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}`（第一行 + 游玩第二行） |
+| 回放结算 | `Replay result osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| {mods} \| {accuracy}% \| {miss}miss \| {pp}PP` |
 | 编辑 | `Editing osu!{mode} {title} [{version}]` |
 | 空闲 | `In osu! Lobby` |
 | tosu 未启动 | (空) |
 
 ## 注意事项
 
-请尽量在私人房间使用，频繁变动的聊天框文本在公共场所可能打扰他人。
+- 请尽量在**私人房间**使用，频繁变动的聊天框文本在公共场所可能打扰他人。
+- 应用会自动缓存最后一次的模组（mods）信息，避免 tosu 数据更新延迟时错误显示 "NM"。
+- 所有配置保存在 `config_osuosc.yaml` 文件中，可以通过 UI 或直接编辑文件修改。
 
 ## 免责声明
 

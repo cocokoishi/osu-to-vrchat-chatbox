@@ -66,6 +66,12 @@ namespace OsuOscVRC.I18n
             "Browse" => "浏览...",
             "TosuNotFound" => "找不到 tosu.exe",
             "TosuWaitTimeout" => "tosu 启动超时，请确认路径正确后重试。",
+            "Warning" => "警告",
+            "Error" => "错误",
+            "InputValidation" => "输入验证",
+            "OscErrorMessage" => "OSC 错误: {0}",
+            "TosuConnectTimeout" => "连接 tosu WebSocket 超时。请确认 tosu 已启动后重试。",
+            "ConfigLoadError" => "配置加载失败: {0}\n将使用默认配置。",
             _ => k
         };
 
@@ -121,6 +127,12 @@ namespace OsuOscVRC.I18n
             "Browse" => "Browse...",
             "TosuNotFound" => "tosu.exe not found",
             "TosuWaitTimeout" => "tosu startup timed out. Verify the path and try again.",
+            "Warning" => "Warning",
+            "Error" => "Error",
+            "InputValidation" => "Input Validation",
+            "OscErrorMessage" => "OSC Error: {0}",
+            "TosuConnectTimeout" => "Timed out while connecting to tosu websocket. Please verify tosu finished starting and try again.",
+            "ConfigLoadError" => "Failed to load config: {0}\nUsing default config.",
             _ => k
         };
     }

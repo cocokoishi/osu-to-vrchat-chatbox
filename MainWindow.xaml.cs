@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
@@ -28,6 +29,7 @@ namespace OsuOscVRC
         private int _lastTimeLive = -1;
         private DateTime _lastTimeLiveChanged = DateTime.MinValue;
         private DateTime _resultScreenStartTime = DateTime.MinValue;
+        private string _lastKnownMods = "";
 
         public MainWindow()
         {
@@ -152,6 +154,28 @@ namespace OsuOscVRC
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
+            var parseErrors = new List<string>();
+
+            if (!int.TryParse(TbTosuPort.Text, out _)) parseErrors.Add(Translator.Get("TosuPort"));
+            if (!int.TryParse(TbOscPort.Text, out _)) parseErrors.Add(Translator.Get("OscPort"));
+            if (!int.TryParse(TbDispStar.Text, out _)) parseErrors.Add(Translator.Get("DispStarDecimals"));
+            if (!int.TryParse(TbDispPp.Text, out _)) parseErrors.Add(Translator.Get("DispPpDecimals"));
+            if (!int.TryParse(TbDispAcc.Text, out _)) parseErrors.Add(Translator.Get("DispAccDecimals"));
+            if (!int.TryParse(TbAdvUpdate.Text, out _)) parseErrors.Add(Translator.Get("AdvOscRate"));
+            if (!int.TryParse(TbAdvResult.Text, out _)) parseErrors.Add(Translator.Get("AdvResultDuration"));
+            if (!int.TryParse(TbAdvPause.Text, out _)) parseErrors.Add(Translator.Get("AdvPauseThreshold"));
+            if (!int.TryParse(TbAdvReconnect.Text, out _)) parseErrors.Add(Translator.Get("AdvReconnectDelay"));
+            if (!int.TryParse(TbAdvMaxLen.Text, out _)) parseErrors.Add(Translator.Get("AdvMaxLength"));
+            if (!int.TryParse(TbAdvMaxTitle.Text, out _)) parseErrors.Add(Translator.Get("AdvMaxTitleLen"));
+
+            if (parseErrors.Count > 0)
+            {
+                var msg = Translator.IsChinese
+                    ? $"以下字段包含无效数字，已保留原值：\n{string.Join("\n", parseErrors)}"
+                    : $"Invalid number in these fields (kept previous value):\n{string.Join("\n", parseErrors)}";
+                MessageBox.Show(msg, Translator.Get("InputValidation"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
             SaveUiToConfig();
             MessageBox.Show(Translator.Get("ConfigSaved"), "OK", MessageBoxButton.OK, MessageBoxImage.Information);
         }
@@ -181,12 +205,12 @@ namespace OsuOscVRC
             bool ready = await _tosuProcess.WaitForReady(TosuStartupTimeoutMs);
             if (!ready)
             {
-                MessageBox.Show(Translator.Get("TosuWaitTimeout"), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Translator.Get("TosuWaitTimeout"), Translator.Get("Warning"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 DoStop(); return;
             }
 
             try { _oscSender = new VRChatOscSender(_config.VRChatOscHost, _config.VRChatOscPort); }
-            catch (Exception ex) { MessageBox.Show($"OSC Error: {ex.Message}", "Error"); DoStop(); return; }
+            catch (Exception ex) { MessageBox.Show(string.Format(Translator.Get("OscErrorMessage"), ex.Message), Translator.Get("Error")); DoStop(); return; }
 
             _tosuClient = new TosuWebSocketClient(_config.TosuHost, _config.TosuPort, _config.ReconnectDelayMs);
             _tosuClient.OnConnectionChanged += (c) => Dispatcher.Invoke(UpdateStatus);
@@ -196,8 +220,8 @@ namespace OsuOscVRC
             bool connected = await _tosuClient.WaitForConnectionAsync(TosuInitialWebSocketTimeoutMs);
             if (!connected)
             {
-                MessageBox.Show("Timed out while connecting to tosu websocket. Please verify tosu finished starting and try again.",
-                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Translator.Get("TosuConnectTimeout"),
+                    Translator.Get("Warning"), MessageBoxButton.OK, MessageBoxImage.Warning);
                 DoStop(); return;
             }
 
@@ -220,6 +244,8 @@ namespace OsuOscVRC
             _currentGameState = GameState.NotRunning;
             _wasWatchingReplay = false;
             _lastPlayFailed = false;
+            _lastTimeLive = -1;
+            _lastTimeLiveChanged = DateTime.MinValue;
             UpdateStatus();
             TxtPreview.Text = "...";
         }
@@ -236,11 +262,15 @@ namespace OsuOscVRC
             var prevState = _currentGameState;
             DetermineGameState(state);
 
+            // Cache last known mods as fallback for tosu's delayed mods-data bug
+            string mods = state.Play?.Mods?.Name ?? "";
+            if (!string.IsNullOrEmpty(mods)) _lastKnownMods = mods;
+
             // Force 0:00 on the first tick when entering Playing/WatchingReplay
             bool justStartedPlaying = (_currentGameState == GameState.Playing || _currentGameState == GameState.WatchingReplay)
                 && prevState != GameState.Playing && prevState != GameState.WatchingReplay && prevState != GameState.Paused;
 
-            string output = ChatboxFormatter.Format(state, _currentGameState, _config, justStartedPlaying);
+            string output = ChatboxFormatter.Format(state, _currentGameState, _config, justStartedPlaying, _lastKnownMods);
             TxtPreview.Text = string.IsNullOrEmpty(output) ? "..." : output;
             if (_oscSender != null && !string.IsNullOrEmpty(output))
             {
@@ -278,9 +308,9 @@ namespace OsuOscVRC
             }
 
             // 1 = Edit, 4 = SelectEdit
-            if (rawState == 1 || rawState == 4) { _currentGameState = GameState.Editor; _wasWatchingReplay = false; _lastPlayFailed = false; return; }
+            if (rawState == 1 || rawState == 4) { _currentGameState = GameState.Editor; _wasWatchingReplay = false; _lastPlayFailed = false; _lastTimeLive = -1; _lastTimeLiveChanged = DateTime.MinValue; return; }
 
-            if (rawState == 5) { _currentGameState = GameState.SongSelect; _wasWatchingReplay = false; _lastPlayFailed = false; return; }
+            if (rawState == 5) { _currentGameState = GameState.SongSelect; _wasWatchingReplay = false; _lastPlayFailed = false; _lastTimeLive = -1; _lastTimeLiveChanged = DateTime.MinValue; return; }
 
             if (rawState == 2)
             {
@@ -352,6 +382,8 @@ namespace OsuOscVRC
             _currentGameState = GameState.Idle;
             _wasWatchingReplay = false;
             _lastPlayFailed = false;
+            _lastTimeLive = -1;
+            _lastTimeLiveChanged = DateTime.MinValue;
         }
 
         private void UpdateStatus()

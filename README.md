@@ -65,19 +65,23 @@ A `config_osuosc.yaml` file is created on first launch. All settings can be edit
 
 | State | Template |
 |-------|----------|
-| Playing | `Playing osu!{mode} {title} [{version}] *{stars}` |
-| Paused | `[Paused] ` + Playing template |
-| Failed | `[Failed] ` + Playing template |
+| Playing | `Playing osu!{mode} {title} [{version}] *{stars}` (line 1) |
+| Playing (2nd line) | `{time_current}/{time_total} {accuracy}% {miss}miss {mods} {pp}PP` |
+| Paused | `[Paused] ` + Playing line 1 + line 2 |
+| Failed | `[Failed] ` + Playing line 1 + line 2 |
 | Song Select | `Selecting osu!{mode} {title} [{version}] *{stars}` |
-| Result | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| Finally {accuracy}% \| {miss}miss \| Get {pp}PP` |
-| Replay | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` |
+| Result Screen | `[Cleared!] osu!{mode} {title} \| {version} \| *{stars} \| {mods} \| {rank} \| Finally {accuracy}% \| {miss}miss \| Get {pp}PP` |
+| Replay | `Watching osu!{mode} {title} [{version}] *{stars} played by {player}` (line 1 + Playing line 2) |
+| Replay Result | `Replay result osu!{mode} {title} \| {version} \| *{stars} \| {rank} \| {mods} \| {accuracy}% \| {miss}miss \| {pp}PP` |
 | Editor | `Editing osu!{mode} {title} [{version}]` |
 | Idle | `In osu! Lobby` |
 | tosu not running | (empty) |
 
 ## Notes
 
-Please use this in private rooms. Frequently updating chatbox text can be distracting in public spaces.
+- Please use this in **private** VRChat rooms. Frequently updating chatbox text can be distracting in public spaces.
+- The app caches the last known mods selection to avoid showing "NM" during the brief transition when tosu hasn't fully loaded mods data yet.
+- All configuration is saved to `config_osuosc.yaml` in the app directory and can be edited via the UI or directly in the file.
 
 ## Disclaimer
 

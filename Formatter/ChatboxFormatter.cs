@@ -7,7 +7,7 @@ namespace OsuOscVRC.Formatter
 {
     public static class ChatboxFormatter
     {
-        public static string Format(OsuState? state, GameState gameState, AppConfig config, bool forceTimeZero = false)
+        public static string Format(OsuState? state, GameState gameState, AppConfig config, bool forceTimeZero = false, string fallbackMods = "")
         {
             if (state == null) return "";
 
@@ -52,10 +52,10 @@ namespace OsuOscVRC.Formatter
                     return "";
             }
 
-            return ApplyVariables(template, state, gameState, config, forceTimeZero);
+            return ApplyVariables(template, state, gameState, config, forceTimeZero, fallbackMods);
         }
 
-        private static string ApplyVariables(string template, OsuState state, GameState gameState, AppConfig config, bool forceTimeZero = false)
+        private static string ApplyVariables(string template, OsuState state, GameState gameState, AppConfig config, bool forceTimeZero = false, string fallbackMods = "")
         {
             var title = config.UseUnicodeTitle && !string.IsNullOrEmpty(state.Beatmap?.TitleUnicode)
                 ? state.Beatmap.TitleUnicode
@@ -103,6 +103,7 @@ namespace OsuOscVRC.Formatter
             var timeCurrent = forceTimeZero ? "0:00" : FormatTime(state.Beatmap?.Time?.Live ?? 0);
             var timeTotal = FormatTime(state.Beatmap?.Time?.LastObject ?? 0);
             string mods = state.Play?.Mods?.Name ?? "";
+            if (string.IsNullOrEmpty(mods)) mods = fallbackMods;
             if (string.IsNullOrEmpty(mods)) mods = "NM";
             int miss = isResult ? (state.ResultsScreen?.Hits?.Miss ?? 0) : (state.Play?.Hits?.Miss ?? 0);
 
@@ -136,12 +137,13 @@ namespace OsuOscVRC.Formatter
             result = string.Join("\n", Array.ConvertAll(result.Split('\n'), l => l.Trim()));
             if (isWhiteSpace && result == "") result = " ";
 
-            if (result.Length > config.MaxMessageLength)
+            int maxMsgLen = Math.Max(1, config.MaxMessageLength);
+            if (result.Length > maxMsgLen)
             {
-                if (config.MaxMessageLength <= 3)
-                    result = result.Substring(0, config.MaxMessageLength);
+                if (maxMsgLen <= 3)
+                    result = result.Substring(0, maxMsgLen);
                 else
-                    result = result.Substring(0, config.MaxMessageLength - 3) + "...";
+                    result = result.Substring(0, maxMsgLen - 3) + "...";
             }
 
             return result;

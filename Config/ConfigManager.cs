@@ -34,7 +34,7 @@ namespace OsuOscVRC.Config
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load config: {ex.Message}\nUsing default config.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format(Translator.Get("ConfigLoadError"), ex.Message), Translator.Get("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return new AppConfig();
             }
         }
