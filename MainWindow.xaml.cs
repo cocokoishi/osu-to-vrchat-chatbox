@@ -29,7 +29,9 @@ namespace OsuOscVRC
         private int _lastTimeLive = -1;
         private DateTime _lastTimeLiveChanged = DateTime.MinValue;
         private DateTime _resultScreenStartTime = DateTime.MinValue;
+        private bool _resultScreenConsumed;
         private string _lastKnownMods = "";
+        private string? _cachedResultOutput;
 
         public MainWindow()
         {
@@ -246,6 +248,8 @@ namespace OsuOscVRC
             _lastPlayFailed = false;
             _lastTimeLive = -1;
             _lastTimeLiveChanged = DateTime.MinValue;
+            _resultScreenConsumed = false;
+            _cachedResultOutput = null;
             UpdateStatus();
             TxtPreview.Text = "...";
         }
@@ -270,7 +274,19 @@ namespace OsuOscVRC
             bool justStartedPlaying = (_currentGameState == GameState.Playing || _currentGameState == GameState.WatchingReplay)
                 && prevState != GameState.Playing && prevState != GameState.WatchingReplay && prevState != GameState.Paused;
 
-            string output = ChatboxFormatter.Format(state, _currentGameState, _config, justStartedPlaying, _lastKnownMods);
+            // Snapshot result screen output on first entry, reuse frozen copy during hold
+            string output;
+            if (_currentGameState is GameState.ResultScreen or GameState.ReplayResultScreen or GameState.FailedResultScreen)
+            {
+                if (prevState != _currentGameState)
+                    _cachedResultOutput = ChatboxFormatter.Format(state, _currentGameState, _config, false, _lastKnownMods);
+                output = _cachedResultOutput ?? "...";
+            }
+            else
+            {
+                _cachedResultOutput = null;
+                output = ChatboxFormatter.Format(state, _currentGameState, _config, justStartedPlaying, _lastKnownMods);
+            }
             TxtPreview.Text = string.IsNullOrEmpty(output) ? "..." : output;
             if (_oscSender != null && !string.IsNullOrEmpty(output))
             {
@@ -282,20 +298,23 @@ namespace OsuOscVRC
         {
             int rawState = state.State?.Number ?? 0;
 
-            // Forced result/replay-result hold
+            // Forced result/replay-result hold — minimum display duration
             if (_currentGameState == GameState.ResultScreen
                 || _currentGameState == GameState.ReplayResultScreen
                 || _currentGameState == GameState.FailedResultScreen)
             {
                 bool holdExpired = (DateTime.Now - _resultScreenStartTime).TotalSeconds >= _config.ResultScreenDurationS;
                 if (!holdExpired && rawState != 2) return;
+                // hold expired or immediate retry: mark consumed and fall through
+                if (holdExpired) _resultScreenConsumed = true;
             }
 
             if (rawState == 7)
             {
                 if (_currentGameState != GameState.ResultScreen
                     && _currentGameState != GameState.ReplayResultScreen
-                    && _currentGameState != GameState.FailedResultScreen)
+                    && _currentGameState != GameState.FailedResultScreen
+                    && !_resultScreenConsumed)
                 {
                     bool isFailedResult = !_wasWatchingReplay
                         && (_lastPlayFailed || string.Equals(state.ResultsScreen?.Rank, "F", StringComparison.OrdinalIgnoreCase));
@@ -303,8 +322,10 @@ namespace OsuOscVRC
                     _currentGameState = _wasWatchingReplay
                         ? GameState.ReplayResultScreen
                         : isFailedResult ? GameState.FailedResultScreen : GameState.ResultScreen;
+                    return;
                 }
-                return;
+                // Already in result state with expired hold, or result already consumed:
+                // fall through to normal state processing (will go to Idle / next state)
             }
 
             // 1 = Edit, 4 = SelectEdit
@@ -367,6 +388,7 @@ namespace OsuOscVRC
                     _lastTimeLive = timeLive;
                     _lastTimeLiveChanged = DateTime.Now;
                     _currentGameState = isReplay ? GameState.WatchingReplay : GameState.Playing;
+                    _resultScreenConsumed = false;
                 }
                 else if ((DateTime.Now - _lastTimeLiveChanged).TotalMilliseconds > _config.PauseDetectionThresholdMs)
                 {
