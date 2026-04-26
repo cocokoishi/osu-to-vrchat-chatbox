@@ -1,0 +1,52 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish
+        run: dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o ./publish
+
+      - name: Download latest tosu (Windows)
+        shell: pwsh
+        run: |
+          $release = Invoke-RestMethod -Uri "https://api.github.com/repos/tosuapp/tosu/releases/latest"
+          $asset = $release.assets | Where-Object { $_.name -like "tosu-windows-*.zip" } | Select-Object -First 1
+          Write-Host "Downloading $($asset.name)..."
+          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "tosu-windows.zip"
+          New-Item -ItemType Directory -Path "./publish/tosu" -Force
+          Expand-Archive -Path "tosu-windows.zip" -DestinationPath "./publish/tosu" -Force
+
+      - name: Write tosu config (disable browser)
+        shell: pwsh
+        run: |
+          @"
+          [dangerous]
+          openDashboardOnStartup = false
+          "@ | Set-Content -Path "./publish/tosu/toso.toml"
+
+      - name: Create release zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "./publish/*" -DestinationPath "osu-to-vrchat-chatbox-${{ github.ref_name }}.zip"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: osu-to-vrchat-chatbox-${{ github.ref_name }}.zip
+          generate_release_notes: true
