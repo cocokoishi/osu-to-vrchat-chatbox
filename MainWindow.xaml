@@ -192,6 +192,11 @@
                         <Label x:Name="LblAdvMaxTitle" Content="标题最大长度:"/>
                         <TextBox x:Name="TbAdvMaxTitle" Grid.Column="1"/>
                     </Grid>
+                    <TextBlock Margin="0,16,0,0">
+                        <Hyperlink NavigateUri="https://github.com/cocokoishi/osu-to-vrchat-chatbox" RequestNavigate="Hyperlink_RequestNavigate">Github: https://github.com/cocokoishi/osu-to-vrchat-chatbox</Hyperlink>
+                        <LineBreak/>
+                        <Hyperlink NavigateUri="https://github.com/tosuapp/tosu" RequestNavigate="Hyperlink_RequestNavigate">Powered by tosu: https://github.com/tosuapp/tosu</Hyperlink>
+                    </TextBlock>
                 </StackPanel>
             </TabItem>
         </TabControl>
