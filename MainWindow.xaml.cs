@@ -284,6 +284,7 @@ namespace OsuOscVRC
                 string profileName = state.Profile?.Name ?? "";
                 string playerName = state.Play?.PlayerName ?? "";
                 bool hasFailed = state.Play?.Failed ?? false;
+                int timeLive = state.Beatmap?.Time?.Live ?? 0;
 
                 bool isReplay = false;
                 if (!isReplay && !string.IsNullOrEmpty(playerName))
@@ -301,15 +302,33 @@ namespace OsuOscVRC
                 }
 
                 _wasWatchingReplay = isReplay;
-                _lastPlayFailed = !isReplay && hasFailed;
-
-                if (hasFailed && !isReplay)
+                if (!isReplay)
                 {
+                    // Treat failed as a latched state: tosu may only report it for a single tick.
+                    _lastPlayFailed = _lastPlayFailed || hasFailed;
+
+                    // A backwards time jump means a new attempt started, so the previous failed state can be cleared.
+                    if (_lastPlayFailed && _lastTimeLive >= 0 && timeLive < _lastTimeLive)
+                    {
+                        _lastPlayFailed = false;
+                    }
+                }
+                else
+                {
+                    _lastPlayFailed = false;
+                }
+
+                if (_lastPlayFailed && !isReplay)
+                {
+                    if (timeLive != _lastTimeLive)
+                    {
+                        _lastTimeLive = timeLive;
+                        _lastTimeLiveChanged = DateTime.Now;
+                    }
                     _currentGameState = GameState.Failed;
                     return;
                 }
 
-                int timeLive = state.Beatmap?.Time?.Live ?? 0;
                 if (timeLive != _lastTimeLive)
                 {
                     _lastTimeLive = timeLive;
