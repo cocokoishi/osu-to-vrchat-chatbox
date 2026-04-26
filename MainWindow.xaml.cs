@@ -13,6 +13,9 @@ namespace OsuOscVRC
 {
     public partial class MainWindow : Window
     {
+        private const int TosuStartupTimeoutMs = 15000;
+        private const int TosuInitialWebSocketTimeoutMs = 15000;
+
         private AppConfig _config;
         private TosuProcessManager? _tosuProcess;
         private TosuWebSocketClient? _tosuClient;
@@ -171,7 +174,7 @@ namespace OsuOscVRC
                 DoStop(); return;
             }
 
-            bool ready = await _tosuProcess.WaitForReady(15000);
+            bool ready = await _tosuProcess.WaitForReady(TosuStartupTimeoutMs);
             if (!ready)
             {
                 MessageBox.Show(Translator.Get("TosuWaitTimeout"), "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -184,6 +187,15 @@ namespace OsuOscVRC
             _tosuClient = new TosuWebSocketClient(_config.TosuHost, _config.TosuPort, _config.ReconnectDelayMs);
             _tosuClient.OnConnectionChanged += (c) => Dispatcher.Invoke(UpdateStatus);
             await _tosuClient.StartAsync();
+            UpdateStatus();
+
+            bool connected = await _tosuClient.WaitForConnectionAsync(TosuInitialWebSocketTimeoutMs);
+            if (!connected)
+            {
+                MessageBox.Show("Timed out while connecting to tosu websocket. Please verify tosu finished starting and try again.",
+                    "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                DoStop(); return;
+            }
 
             _updateTimer.Interval = TimeSpan.FromMilliseconds(_config.UpdateIntervalMs);
             _updateTimer.Start();

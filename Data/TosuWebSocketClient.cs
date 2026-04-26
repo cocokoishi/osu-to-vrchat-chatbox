@@ -14,6 +14,7 @@ namespace OsuOscVRC.Data
         private CancellationTokenSource? _cts;
         private readonly string _uri;
         private readonly int _reconnectDelayMs;
+        private TaskCompletionSource<bool>? _initialConnectionTcs;
 
         public OsuState? LatestState { get; private set; }
         public bool IsConnected => _webSocket?.State == WebSocketState.Open;
@@ -31,8 +32,29 @@ namespace OsuOscVRC.Data
         {
             Stop();
             _cts = new CancellationTokenSource();
+            _initialConnectionTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             _ = Task.Run(() => ReceiveLoopAsync(_cts.Token));
             return Task.CompletedTask;
+        }
+
+        public async Task<bool> WaitForConnectionAsync(int timeoutMs, CancellationToken cancellationToken = default)
+        {
+            if (IsConnected) return true;
+
+            var initialConnectionTcs = _initialConnectionTcs;
+            if (initialConnectionTcs == null) return false;
+
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var delayTask = Task.Delay(timeoutMs, timeoutCts.Token);
+            var completedTask = await Task.WhenAny(initialConnectionTcs.Task, delayTask);
+
+            if (completedTask != initialConnectionTcs.Task)
+            {
+                return false;
+            }
+
+            timeoutCts.Cancel();
+            return await initialConnectionTcs.Task;
         }
 
         public void Stop()
@@ -51,12 +73,16 @@ namespace OsuOscVRC.Data
 
             _cts?.Dispose();
             _cts = null;
+            _initialConnectionTcs?.TrySetResult(false);
+            _initialConnectionTcs = null;
 
             OnConnectionChanged?.Invoke(false);
         }
 
         private async Task ReceiveLoopAsync(CancellationToken token)
         {
+            bool hasConnectedOnce = false;
+
             while (!token.IsCancellationRequested)
             {
                 try
@@ -64,6 +90,8 @@ namespace OsuOscVRC.Data
                     using var ws = new ClientWebSocket();
                     _webSocket = ws;
                     await ws.ConnectAsync(new Uri(_uri), token);
+                    hasConnectedOnce = true;
+                    _initialConnectionTcs?.TrySetResult(true);
                     OnConnectionChanged?.Invoke(true);
 
                     var buffer = new byte[1024 * 64];
@@ -111,7 +139,8 @@ namespace OsuOscVRC.Data
 
                 if (!token.IsCancellationRequested)
                 {
-                    try { await Task.Delay(_reconnectDelayMs, token); }
+                    int reconnectDelayMs = hasConnectedOnce ? _reconnectDelayMs : Math.Min(_reconnectDelayMs, 500);
+                    try { await Task.Delay(reconnectDelayMs, token); }
                     catch (OperationCanceledException) { break; }
                 }
             }
