@@ -40,13 +40,13 @@ jobs:
           openDashboardOnStartup = false
           "@ | Set-Content -Path "./publish/tosu/toso.toml"
 
-      - name: Create release zip
+      - name: Create release 7z
         shell: pwsh
         run: |
-          Compress-Archive -Path "./publish/*" -DestinationPath "osu-to-vrchat-chatbox-${{ github.ref_name }}.zip"
+          & "C:\Program Files\7-Zip\7z.exe" a -mx=9 -t7z "osu-to-vrchat-chatbox-${{ github.ref_name }}.7z" "./publish/*"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: osu-to-vrchat-chatbox-${{ github.ref_name }}.zip
+          files: osu-to-vrchat-chatbox-${{ github.ref_name }}.7z
           generate_release_notes: true
