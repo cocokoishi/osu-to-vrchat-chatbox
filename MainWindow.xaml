@@ -32,10 +32,13 @@
         <!-- ═══ Row 2: Start / Stop ═══ -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
             <Button x:Name="BtnStart" Content="▶ 开始" Click="BtnStart_Click"
-                    Width="130" FontSize="14" FontWeight="Bold"
-                    Background="#E8E8E8" Foreground="#111111" Margin="0,0,10,0"/>
+                    Width="120" FontSize="14" FontWeight="Bold"
+                    Background="#E8E8E8" Foreground="#111111" Margin="0,0,8,0"/>
+            <Button x:Name="BtnStopOsc" Content="⏸ 停止OSC" Click="BtnStopOsc_Click"
+                    Width="120" FontSize="14" FontWeight="Bold" IsEnabled="False"
+                    Background="#555555" Foreground="#AAAAAA" Margin="0,0,8,0"/>
             <Button x:Name="BtnStop" Content="⏹ 停止" Click="BtnStop_Click"
-                    Width="130" FontSize="14" FontWeight="Bold" IsEnabled="False"
+                    Width="120" FontSize="14" FontWeight="Bold" IsEnabled="False"
                     Background="#333333" Foreground="#AAAAAA"/>
         </StackPanel>
 

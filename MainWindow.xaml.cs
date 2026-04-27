@@ -46,6 +46,7 @@ namespace OsuOscVRC
             Title = Translator.Get("Title");
             GrpPreview.Header = Translator.Get("PreviewLabel");
             BtnStart.Content = Translator.Get("Start");
+            BtnStopOsc.Content = Translator.Get("StopOsc");
             BtnStop.Content = Translator.Get("Stop");
             BtnSave.Content = Translator.Get("SaveConfig");
             TabConnection.Header = Translator.Get("TabConnection");
@@ -163,7 +164,21 @@ namespace OsuOscVRC
         {
             SaveUiToConfig();
             BtnStart.IsEnabled = false;
+            BtnStopOsc.IsEnabled = true;
             BtnStop.IsEnabled = true;
+
+            // If tosu is already running (e.g. after Stop OSC), only restart OSC
+            if (_tosuClient != null && _tosuClient.IsConnected)
+            {
+                try { _oscSender = new VRChatOscSender(_config.VRChatOscHost, _config.VRChatOscPort); }
+                catch (Exception ex) { MessageBox.Show($"OSC Error: {ex.Message}", "Error"); DoStop(); return; }
+
+                _updateTimer.Interval = TimeSpan.FromMilliseconds(_config.UpdateIntervalMs);
+                _updateTimer.Start();
+                _currentGameState = GameState.Idle;
+                UpdateStatus();
+                return;
+            }
 
             TxtStatus.Text = Translator.Get("StatusStartingTosu");
             _tosuProcess = new TosuProcessManager(_config.TosuExePath, _config.TosuHost, _config.TosuPort);
@@ -203,6 +218,8 @@ namespace OsuOscVRC
             UpdateStatus();
         }
 
+        private void BtnStopOsc_Click(object? sender, RoutedEventArgs? e) => DoStopOsc();
+
         private void BtnStop_Click(object? sender, RoutedEventArgs? e) => DoStop();
 
         private void DoStop()
@@ -213,10 +230,22 @@ namespace OsuOscVRC
             _oscSender?.Dispose(); _oscSender = null;
             _tosuProcess?.Dispose(); _tosuProcess = null;
             BtnStart.IsEnabled = true;
+            BtnStopOsc.IsEnabled = false;
             BtnStop.IsEnabled = false;
             _currentGameState = GameState.NotRunning;
             _wasWatchingReplay = false;
             _lastPlayFailed = false;
+            UpdateStatus();
+            TxtPreview.Text = "...";
+        }
+
+        private void DoStopOsc()
+        {
+            _updateTimer.Stop();
+            try { _oscSender?.ClearChatbox(); } catch { }
+            _oscSender?.Dispose(); _oscSender = null;
+            BtnStart.IsEnabled = true;
+            BtnStopOsc.IsEnabled = false;
             UpdateStatus();
             TxtPreview.Text = "...";
         }
@@ -356,7 +385,9 @@ namespace OsuOscVRC
             if (_tosuClient == null)
                 TxtStatus.Text = Translator.Get("StatusDisconnected");
             else if (_tosuClient.IsConnected)
-                TxtStatus.Text = Translator.Get("StatusConnected");
+                TxtStatus.Text = _oscSender != null
+                    ? Translator.Get("StatusConnected")
+                    : Translator.Get("StatusOscStopped");
             else
                 TxtStatus.Text = Translator.Get("StatusTosuDisconnected");
         }
