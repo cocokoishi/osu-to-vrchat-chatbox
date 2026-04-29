@@ -171,6 +171,15 @@
             <!-- ── Advanced ── -->
             <TabItem x:Name="TabAdvanced" Header="高级设置">
                 <StackPanel Margin="12,16,12,12">
+                    <Grid Margin="0,0,0,12"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Label x:Name="LblLanguage" Content="语言:"/>
+                        <ComboBox x:Name="CboLanguage" Grid.Column="1" HorizontalAlignment="Left" MinWidth="120"
+                                  SelectionChanged="CboLanguage_SelectionChanged">
+                            <ComboBoxItem Tag="zh" Content="中文"/>
+                            <ComboBoxItem Tag="en" Content="English"/>
+                            <ComboBoxItem Tag="ja" Content="日本語"/>
+                        </ComboBox>
+                    </Grid>
                     <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                         <Label x:Name="LblAdvUpdate" Content="OSC 发送间隔 (ms):"/>
                         <TextBox x:Name="TbAdvUpdate" Grid.Column="1"/>

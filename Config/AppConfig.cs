@@ -23,6 +23,7 @@ namespace OsuOscVRC.Config
 
         public TemplatesConfig Templates { get; set; } = new();
         public ModeNamesConfig ModeNames { get; set; } = new();
+        public string Language { get; set; } = "auto";
         public bool FirstRunDone { get; set; } = false;
     }
 

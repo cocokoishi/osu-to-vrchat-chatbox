@@ -16,6 +16,7 @@ namespace OsuOscVRC
         private const int TosuStartupTimeoutMs = 15000;
         private const int TosuInitialWebSocketTimeoutMs = 15000;
 
+        private bool _isInitializing = true;
         private AppConfig _config;
         private TosuProcessManager? _tosuProcess;
         private TosuWebSocketClient? _tosuClient;
@@ -32,10 +33,12 @@ namespace OsuOscVRC
         public MainWindow()
         {
             InitializeComponent();
-            ApplyI18n();
             _config = ConfigManager.Load();
+            Translator.Language = _config.Language;
+            ApplyI18n();
             ConfigManager.CheckFirstRun(_config);
             PopulateUiFromConfig();
+            _isInitializing = false;
             _updateTimer = new DispatcherTimer();
             _updateTimer.Tick += UpdateTimer_Tick;
             UpdateStatus();
@@ -81,6 +84,7 @@ namespace OsuOscVRC
             LblAdvReconnect.Content = Translator.Get("AdvReconnectDelay");
             LblAdvMaxLen.Content = Translator.Get("AdvMaxLength");
             LblAdvMaxTitle.Content = Translator.Get("AdvMaxTitleLen");
+            LblLanguage.Content = Translator.Get("AdvLanguage");
         }
 
         private void PopulateUiFromConfig()
@@ -113,6 +117,16 @@ namespace OsuOscVRC
             TbAdvReconnect.Text = _config.ReconnectDelayMs.ToString();
             TbAdvMaxLen.Text = _config.MaxMessageLength.ToString();
             TbAdvMaxTitle.Text = _config.MaxTitleLength.ToString();
+
+            var effectiveLang = Translator.EffectiveLanguage;
+            foreach (System.Windows.Controls.ComboBoxItem item in CboLanguage.Items)
+            {
+                if (item.Tag?.ToString() == effectiveLang)
+                {
+                    CboLanguage.SelectedItem = item;
+                    break;
+                }
+            }
         }
 
         private void SaveUiToConfig()
@@ -145,6 +159,8 @@ namespace OsuOscVRC
             if (int.TryParse(TbAdvReconnect.Text, out int arec)) _config.ReconnectDelayMs = arec;
             if (int.TryParse(TbAdvMaxLen.Text, out int am)) _config.MaxMessageLength = am;
             if (int.TryParse(TbAdvMaxTitle.Text, out int mt)) _config.MaxTitleLength = mt;
+            if (CboLanguage.SelectedItem is System.Windows.Controls.ComboBoxItem langItem && langItem.Tag is string langTag)
+                _config.Language = langTag;
             ConfigManager.Save(_config);
         }
 
@@ -158,6 +174,19 @@ namespace OsuOscVRC
         {
             var dlg = new OpenFileDialog { Filter = "tosu|tosu.exe|All|*.*", Title = "Select tosu.exe" };
             if (dlg.ShowDialog() == true) TbTosuExePath.Text = dlg.FileName;
+        }
+
+        private void CboLanguage_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (_isInitializing) return;
+            if (CboLanguage.SelectedItem is System.Windows.Controls.ComboBoxItem item && item.Tag is string tag)
+            {
+                _config.Language = tag;
+                Translator.Language = tag;
+                ApplyI18n();
+                UpdateStatus();
+                ConfigManager.Save(_config);
+            }
         }
 
         private async void BtnStart_Click(object sender, RoutedEventArgs e)

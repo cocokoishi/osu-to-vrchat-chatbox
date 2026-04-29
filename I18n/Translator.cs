@@ -4,18 +4,36 @@ namespace OsuOscVRC.I18n
 {
     public static class Translator
     {
-        public static bool IsChinese { get; }
+        private static string _language = "auto";
 
-        static Translator()
+        public static string Language
         {
-            var culture = CultureInfo.CurrentUICulture.Name.ToLower();
-            IsChinese = culture.StartsWith("zh");
+            get => _language;
+            set => _language = value;
         }
 
-        public static string Get(string key) => IsChinese ? ZH(key) : EN(key);
+        public static string EffectiveLanguage
+        {
+            get
+            {
+                if (_language != "auto") return _language;
+                var culture = CultureInfo.CurrentUICulture.Name.ToLower();
+                if (culture.StartsWith("zh")) return "zh";
+                if (culture.StartsWith("ja")) return "ja";
+                return "en";
+            }
+        }
+
+        public static string Get(string key) => EffectiveLanguage switch
+        {
+            "zh" => ZH(key),
+            "ja" => JP(key),
+            _ => EN(key)
+        };
 
         private static string ZH(string k) => k switch
         {
+            "AdvLanguage" => "语言:",
             "Title" => "osu! → VRChat OSC",
             "StatusConnected" => "● 已连接 | tosu 运行中 | OSC 活动中",
             "StatusDisconnected" => "○ 未连接 | 等待 tosu...",
@@ -70,6 +88,7 @@ namespace OsuOscVRC.I18n
 
         private static string EN(string k) => k switch
         {
+            "AdvLanguage" => "Language:",
             "Title" => "osu! → VRChat OSC",
             "StatusConnected" => "● Connected | tosu Running | OSC Active",
             "StatusDisconnected" => "○ Disconnected | Waiting for tosu...",
@@ -119,6 +138,61 @@ namespace OsuOscVRC.I18n
             "Browse" => "Browse...",
             "TosuNotFound" => "tosu.exe not found",
             "TosuWaitTimeout" => "tosu startup timed out. Verify the path and try again.",
+            _ => k
+        };
+
+        private static string JP(string k) => k switch
+        {
+            "AdvLanguage" => "言語:",
+            "Title" => "osu! → VRChat OSC",
+            "StatusConnected" => "● 接続完了 | tosu 実行中 | OSC アクティブ",
+            "StatusDisconnected" => "○ 未接続 | tosu を待機中...",
+            "StatusTosuDisconnected" => "○ tosu に接続中...",
+            "StatusStartingTosu" => "○ tosu を起動中...",
+            "StatusOscStopped" => "● tosu 実行中 | OSC 停止中",
+            "PreviewLabel" => "現在の出力プレビュー:",
+            "Start" => "▶ 開始",
+            "StopOsc" => "⏸ OSC停止",
+            "Stop" => "⏹ 停止",
+            "SaveConfig" => "設定を保存",
+            "ConfigSaved" => "設定を保存しました！",
+            "FirstRunTitle" => "⚠ 注意事項 / NOTICE",
+            "FirstRunMessage" => "本ソフトウェアはプライベートルームでご使用ください。他のプレイヤーのプレイ体験に影響を与えないようお願いします。\nPlease use this software in PRIVATE rooms to avoid disturbing others' gameplay experience.",
+            "TabConnection" => "接続",
+            "TabTemplates" => "テンプレート",
+            "TabDisplay" => "表示",
+            "TabAdvanced" => "詳細設定",
+            "TosuExePath" => "tosu.exe パス:",
+            "TosuPort" => "tosu ポート:",
+            "OscHost" => "VRC OSC ホスト:",
+            "OscPort" => "VRC OSC ポート:",
+            "TplPlaying1" => "プレイ中 (1行目):",
+            "TplPlaying2" => "プレイ中 (2行目):",
+            "TplPaused" => "一時停止プレフィックス:",
+            "TplReplay" => "リプレイ視聴:",
+            "TplReplayResult" => "リプレイ結果:",
+            "TplSongSelect" => "曲選択:",
+            "TplEditor" => "エディターモード:",
+            "TplResult" => "結果画面:",
+            "TplIdle" => "ロビー/待機中:",
+            "DispUseUnicode" => "オリジナルタイトルを使用 (Unicode)",
+            "DispShowArtist" => "アーティスト名を表示",
+            "DispStarDecimals" => "レート小数桁:",
+            "DispPpDecimals" => "PP 小数桁:",
+            "DispAccDecimals" => "精度 小数桁:",
+            "DispModeOsu" => "osu! モード名:",
+            "DispModeTaiko" => "taiko モード名:",
+            "DispModeCatch" => "catch モード名:",
+            "DispModeMania" => "mania モード名:",
+            "AdvOscRate" => "OSC 送信間隔 (ms):",
+            "AdvResultDuration" => "結果表示時間 (s):",
+            "AdvPauseThreshold" => "一時停止判定 (ms):",
+            "AdvReconnectDelay" => "再接続遅延 (ms):",
+            "AdvMaxLength" => "最大メッセージ長:",
+            "AdvMaxTitleLen" => "タイトル最大長:",
+            "Browse" => "参照...",
+            "TosuNotFound" => "tosu.exe が見つかりません",
+            "TosuWaitTimeout" => "tosu の起動がタイムアウトしました。パスを確認して再試行してください。",
             _ => k
         };
     }
