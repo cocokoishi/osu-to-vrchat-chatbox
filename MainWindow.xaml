@@ -94,7 +94,7 @@
                                  Foreground="{StaticResource DimTextBrush}"
                                  Background="Transparent" BorderThickness="0"
                                  IsReadOnly="True" IsReadOnlyCaretVisible="False"
-                                 Text="可用变量:&#x0a;  {title} {artist} {version} {stars} {mode} {mode_id} {path}&#x0a;  {time_current} {time_total} {accuracy} {acc} {pp} {pp_fc} {rank} {mods} {mods_id} {combo} {max_combo} {miss} {player}&#x0a;  判定统计: {n300} {n100} {n50} {ngeki} {nkatu} {passed_objects}  |  变速: {clock_rate}"/>
+                                 Text="Available variables:&#x0a;  {title} {artist} {version} {stars} {mode} {mode_id} {path}&#x0a;  {time_current} {time_total} {accuracy} {acc} {pp} {pp_fc} {rank} {mods} {mods_id} {combo} {max_combo} {miss} {player}&#x0a;  Hit stats: {n300} {n100} {n50} {ngeki} {nkatu} {passed_objects}  |  Clock rate: {clock_rate}"/>
 
                         <Label x:Name="LblTplPlaying1" Content="游玩中 (第一行):"/>
                         <TextBox x:Name="TbTplPlaying1" Margin="0,2,0,10"/>
@@ -146,7 +146,7 @@
                             <TextBox x:Name="TbDispAcc" Grid.Column="1"/>
                         </Grid>
 
-                        <TextBlock Text="─── 模式名称映射 ───" Foreground="{StaticResource DimTextBrush}" Margin="0,0,0,8"/>
+                        <TextBlock xml:space="preserve" Text="            " Foreground="{StaticResource DimTextBrush}" Margin="0,0,0,8"/>
 
                         <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                             <Label x:Name="LblDispModeOsu" Content="osu! 模式:"/>
